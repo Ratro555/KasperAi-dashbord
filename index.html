@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алёша AI — Пульт управления</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --card-bg: #1e1e1e;
+            --accent: #00ff88;
+            --yt-red: #ff0000;
+            --tw-purple: #9146ff;
+            --text: #ffffff;
+            --locked: #444444;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 600px;
+            margin-top: 30px;
+            display: none;
+            padding-bottom: 50px;
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+
+        .badge {
+            background: var(--accent);
+            color: black;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .control-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        h2 { margin-top: 0; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .btn:hover:not(.locked) { opacity: 0.8; transform: translateY(-2px); }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-yt { background: var(--yt-red); }
+        .btn-tw { background: var(--tw-purple); }
+        
+        .locked {
+            background: var(--locked) !important;
+            cursor: not-allowed;
+            filter: grayscale(1);
+            opacity: 0.6;
+        }
+
+        textarea {
+            width: 100%;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 10px;
+            padding: 12px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            resize: none;
+            font-size: 14px;
+        }
+
+        .save-btn {
+            background: var(--accent);
+            color: black;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        #loading, #error { margin-top: 100px; text-align: center; padding: 20px; }
+        #error { color: #ff4444; display: none; }
+        
+        .stats-grid { display: flex; justify-content: space-around; text-align: center; }
+        .stats-item b { font-size: 1.5em; display: block; }
+        .stats-item small { color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <div id="loading">
+        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--accent);"></i>
+        <p>Синхронизация с базой данных...</p>
+    </div>
+
+    <div id="error">
+        <i class="fas fa-exclamation-triangle fa-3x"></i>
+        <h1 id="err-msg">Доступ ограничен</h1>
+        <p>Пожалуйста, перейдите в бота для получения доступа.</p>
+    </div>
+
+    <div class="container" id="main-ui">
+        <div class="header">
+            <h1>Панель Алёши 🤖</h1>
+            <span class="badge" id="plan-display">Загрузка тарифа...</span>
+        </div>
+
+        <div class="control-card">
+            <h2><i class="fas fa-plug"></i> Подключение сервисов</h2>
+            <div class="btn-grid">
+                <button id="yt-start" class="btn btn-yt" onclick="handleYoutubeAuth()">
+                    <i class="fab fa-youtube"></i> YouTube
+                </button>
+                <button id="tw-start" class="btn btn-tw" onclick="handleTwitchAuth()">
+                    <i class="fab fa-twitch"></i> Twitch
+                </button>
+            </div>
+        </div>
+
+        <div class="control-card" id="ai-settings">
+            <h2><i class="fas fa-brain"></i> Характер Gemini AI</h2>
+            <p style="font-size: 0.8em; color: #aaa;">Инструкция для ответов бота в чате:</p>
+            <textarea id="bot-prompt" rows="5" placeholder="Например: Ты веселый помощник, любишь шутить про игры..."></textarea>
+            <button id="save-prompt-btn" class="btn save-btn" onclick="saveSettings()">
+                <i class="fas fa-save"></i> Сохранить характер
+            </button>
+        </div>
+
+        <div class="control-card">
+            <h2><i class="fas fa-chart-bar"></i> Мониторинг</h2>
+            <div class="stats-grid">
+                <div class="stats-item"><b id="msg-count">0</b><small>Чат</small></div>
+                <div class="stats-item"><b id="del-count" style="color: var(--yt-red);">0</b><small>Чистка</small></div>
+                <div class="stats-item"><b id="loyalty-count" style="color: var(--accent);">0</b><small>Баллы</small></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';       
+        const GOOGLE_CLIENT_ID = '201654569135-6k95o55athv2fi3m9n4rk3eahft1k5ib.apps.googleusercontent.com';
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tgId = urlParams.get('id');
+        const token = urlParams.get('token');
+
+        let currentUser = null;
+
+        async function init() {
+            if (!tgId || !token) {
+                showError("Ошибка: Доступ запрещен. Используйте ссылку из бота!");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}&access_token=eq.${token}`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    currentUser = data[0];
+                    renderUI(currentUser);
+                } else {
+                    showError("Пользователь не найден. Проверьте оплату.");
+                }
+            } catch (e) {
+                showError("Ошибка подключения к серверу.");
+            }
+        }
+
+        function renderUI(user) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+            
+            const plan = (user.plan_type || 'lite').toLowerCase();
+            document.getElementById('plan-display').innerText = `Тариф: ${plan}`;
+            if (user.bot_persona) document.getElementById('bot-prompt').value = user.bot_persona;
+
+            // Логика блокировки кнопок
+            if (plan === 'lite') {
+                lockButton('yt-start', 'YouTube доступен в тарифе Standard');
+                lockButton('tw-start', 'Twitch доступен в тарифе PRO');
+                lockSettings(true);
+            } else if (plan === 'standard') {
+                lockButton('tw-start', 'Twitch доступен только в PRO');
+                lockSettings(false);
+            } else {
+                // PRO - всё открыто
+                lockSettings(false);
+            }
+        }
+
+        function lockButton(id, msg) {
+            const el = document.getElementById(id);
+            el.classList.add('locked');
+            el.onclick = () => alert(msg);
+        }
+
+        function lockSettings(isLocked) {
+            const area = document.getElementById('bot-prompt');
+            const btn = document.getElementById('save-prompt-btn');
+            if (isLocked) {
+                area.disabled = true;
+                area.placeholder = "Настройка AI недоступна в Lite";
+                btn.classList.add('locked');
+                btn.onclick = () => alert('Обновите тариф для настройки AI');
+            }
+        }
+
+        // Авторизация YouTube
+        function handleYoutubeAuth() {
+            const scope = 'https://www.googleapis.com/auth/youtube.force-ssl';
+            const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=${encodeURIComponent(scope)}&access_type=offline&prompt=consent&state=${tgId}`;
+            window.location.href = authUrl;
+        }
+
+        function handleTwitchAuth() {
+            alert('Перенаправление на Twitch Auth...');
+            // Аналогичная логика для Twitch
+        }
+
+        async function saveSettings() {
+            const newPrompt = document.getElementById('bot-prompt').value;
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'apikey': SB_KEY, 
+                        'Authorization': `Bearer ${SB_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ bot_persona: newPrompt })
+                });
+                if (res.ok) alert('✅ Характер Алёши обновлен!');
+            } catch (e) {
+                alert('Ошибка сохранения.');
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('err-msg').innerText = msg;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
