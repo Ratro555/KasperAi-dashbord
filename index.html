@@ -169,7 +169,8 @@
         // --- CONFIG ---
         const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
-        
+        const RAILWAY_URL = 'https://aleshabot-production.up.railway.app'; // ТВОЙ АДРЕС RAILWAY
+
         const urlParams = new URLSearchParams(window.location.search);
         const tgId = urlParams.get('id');
         const token = urlParams.get('token');
@@ -183,7 +184,6 @@
             }
 
             try {
-                // ИСПРАВЛЕНО: Теперь ищем по web_access_token
                 const response = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}&web_access_token=eq.${token}`, {
                     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
                 });
@@ -192,6 +192,7 @@
                 if (data && data.length > 0) {
                     currentUser = data[0];
                     renderUI(currentUser);
+                    updateStats(); // Запускаем обновление цифр
                 } else {
                     showError("Пользователь не найден. Проверьте оплату в боте.");
                 }
@@ -209,7 +210,6 @@
             
             if (user.bot_persona) document.getElementById('bot-prompt').value = user.bot_persona;
 
-            // --- НОВАЯ ЛОГИКА БЛОКИРОВКИ ---
             if (plan === 'free') {
                 lockButton('yt-start', 'YouTube доступен в тарифе STARTER');
                 lockButton('tw-start', 'Twitch доступен в тарифе PRO');
@@ -218,7 +218,6 @@
                 lockButton('tw-start', 'Twitch доступен только в тарифе PRO');
                 lockSettings(false);
             } else {
-                // PRO - всё разблокировано
                 lockSettings(false);
             }
         }
@@ -244,13 +243,24 @@
         }
 
         function handleYoutubeAuth() {
-            // Редирект на твой Railway обработчик для OAuth
+            // ИСПРАВЛЕНО: Теперь ведет на твой реальный сервер Railway
             alert('Перенаправление на авторизацию YouTube...');
-            window.location.href = `https://api.aleshaai.com/info?state=${tgId}`;
+            window.location.href = `${RAILWAY_URL}/callback?state=${tgId}`;
         }
 
         function handleTwitchAuth() {
             alert('Twitch доступен только в тарифе PRO');
+        }
+
+        async function updateStats() {
+            try {
+                // Подсчет сообщений в чате из таблицы youtube_logs
+                const res = await fetch(`${SB_URL}/rest/v1/youtube_logs?select=count`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Range-Unit': 'items', 'Prefer': 'count=exact' }
+                });
+                const count = res.headers.get('content-range').split('/')[1];
+                document.getElementById('msg-count').innerText = count || 0;
+            } catch (e) { console.error("Ошибка статистики"); }
         }
 
         async function saveSettings() {
