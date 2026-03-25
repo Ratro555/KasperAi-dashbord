@@ -3,304 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Алёша AI — Пульт управления</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Kasper Ai — Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg: #0f0f0f;
-            --card-bg: #1e1e1e;
-            --accent: #00ff88;
-            --yt-red: #ff0000;
-            --tw-purple: #9146ff;
-            --text: #ffffff;
-            --locked: #444444;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 95%;
-            max-width: 600px;
-            margin-top: 30px;
-            display: none;
-            padding-bottom: 50px;
-        }
-
-        .header { text-align: center; margin-bottom: 30px; }
-
-        .badge {
-            background: var(--accent);
-            color: black;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9em;
-            text-transform: uppercase;
-        }
-
-        .control-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-        }
-
-        h2 { margin-top: 0; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
-
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .btn {
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.2s;
-            color: white;
-            font-size: 0.9em;
-        }
-
-        .btn:hover:not(.locked) { opacity: 0.8; transform: translateY(-2px); }
-        .btn:active { transform: scale(0.98); }
-
-        .btn-yt { background: var(--yt-red); }
-        .btn-tw { background: var(--tw-purple); }
+        /* Основные стили затухания и карточек */
+        :root { --bg: #0a0a0a; --card: #151515; --accent: #00ff88; --text: #eee; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        .locked {
-            background: var(--locked) !important;
-            cursor: not-allowed !important;
-            filter: grayscale(1);
-            opacity: 0.6;
-        }
-
-        textarea {
-            width: 100%;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 10px;
-            padding: 12px;
-            box-sizing: border-box;
-            margin-top: 10px;
-            resize: none;
-            font-size: 14px;
-        }
-
-        .save-btn {
-            background: var(--accent);
-            color: black;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        #loading, #error { margin-top: 100px; text-align: center; padding: 20px; }
-        #error { color: #ff4444; display: none; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; width: 100%; max-width: 1200px; }
         
-        .stats-grid { display: flex; justify-content: space-around; text-align: center; }
-        .stats-item b { font-size: 1.5em; display: block; }
-        .stats-item small { color: #aaa; }
+        .panel { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #222; position: relative; }
+        .panel h3 { font-size: 0.9rem; color: #888; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+        /* Эффект затухания */
+        .faded { opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        textarea, input { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; resize: none; transition: 0.3s; }
+        textarea:focus { border-color: var(--accent); outline: none; }
+
+        .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-save:active { transform: scale(0.98); }
+
+        /* Переключатели и значки */
+        .lang-switch, .status-switch { display: flex; gap: 5px; background: #000; padding: 5px; border-radius: 20px; width: fit-content; margin-bottom: 20px; }
+        .sw-btn { padding: 5px 15px; border-radius: 15px; border: none; background: transparent; color: #555; cursor: pointer; font-size: 0.8rem; }
+        .sw-btn.active { background: #333; color: var(--accent); }
+
+        .badge-pro { background: var(--accent); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: auto; }
+        
+        /* Таблица лояльности */
+        .loyalty-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
+        .loyalty-table th { color: #555; text-align: left; padding: 5px; }
+        .loyalty-table td { padding: 8px 5px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div id="loading">
-        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--accent);"></i>
-        <p>Синхронизация с базой данных Алёши...</p>
-    </div>
-
-    <div id="error">
-        <i class="fas fa-exclamation-triangle fa-3x"></i>
-        <h1 id="err-msg">Доступ ограничен</h1>
-        <p>Пожалуйста, перейдите в бота для получения доступа.</p>
-    </div>
-
-    <div class="container" id="main-ui">
-        <div class="header">
-            <h1>Панель Алёши 🤖</h1>
-            <span class="badge" id="plan-display">Загрузка тарифа...</span>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 id="main-title">Панель Kasper Ai 🤖</h1>
+        <div class="lang-switch">
+            <button class="sw-btn" id="btn-en">EN</button>
+            <button class="sw-btn active" id="btn-ru">RU</button>
         </div>
+        <div id="plan-display" class="badge-pro" style="display:inline-block; font-size: 1rem;">ТАРИФ: PRO</div>
+    </div>
 
-        <div class="control-card">
-            <h2><i class="fas fa-plug"></i> Подключение сервисов</h2>
-            <div class="btn-grid">
-                <button id="yt-start" class="btn btn-yt" onclick="handleYoutubeAuth()">
-                    <i class="fab fa-youtube"></i> YouTube
-                </button>
-                <button id="tw-start" class="btn btn-tw" onclick="handleTwitchAuth()">
-                    <i class="fab fa-twitch"></i> Twitch
-                </button>
+    <div class="dashboard-grid">
+        
+        <div class="panel">
+            <h3><i class="fas fa-chart-line"></i> Мониторинг</h3>
+            <div style="display: flex; justify-content: space-around; text-align: center;">
+                <div><b id="mon-chat">0</b><br><small>Чат</small></div>
+                <div><b id="mon-clean" style="color:#ff4444">0</b><br><small>Чистка</small></div>
+                <div><b id="mon-points" style="color:var(--accent)">0</b><br><small>Баллы</small></div>
             </div>
         </div>
 
-        <div class="control-card" id="ai-settings">
-            <h2><i class="fas fa-brain"></i> Характер Gemini AI</h2>
-            <p style="font-size: 0.8em; color: #aaa;">Инструкция для ответов бота в чате:</p>
-            <textarea id="bot-prompt" rows="5" placeholder="Например: Ты веселый помощник, любишь шутить про игры..."></textarea>
-            <button id="save-prompt-btn" class="btn save-btn" onclick="saveSettings()">
-                <i class="fas fa-save"></i> Сохранить характер
-            </button>
+        <div class="panel" id="panel-character">
+            <h3><i class="fas fa-brain"></i> Характер Kasper Ai <span class="badge-pro">STARTER | PRO</span></h3>
+            <textarea id="text-character" rows="4" placeholder="Инструкция для ответов бота..."></textarea>
+            <div id="char-count" style="font-size: 0.7rem; text-align: right; color: #555;">0 / 1500</div>
+            <button class="btn-save" onclick="savePanel('character')">Сохранить характер</button>
         </div>
 
-        <div class="control-card">
-            <h2><i class="fas fa-chart-bar"></i> Мониторинг</h2>
-            <div class="stats-grid">
-                <div class="stats-item"><b id="msg-count">0</b><small>Чат</small></div>
-                <div class="stats-item"><b id="del-count" style="color: var(--yt-red);">0</b><small>Чистка</small></div>
-                <div class="stats-item"><b id="loyalty-count" style="color: var(--accent);">0</b><small>Баллы</small></div>
-            </div>
+        <div class="panel" id="panel-filter">
+            <h3><i class="fas fa-shield-halved"></i> Фильтр слов</h3>
+            <textarea id="text-filter" rows="3" placeholder="Слова через запятую..."></textarea>
+            <button class="btn-save" onclick="savePanel('filter')">Сохранить фильтр</button>
         </div>
+
+        <div class="panel">
+            <h3><i class="fas fa-language"></i> Переводчик</h3>
+            <div class="status-switch">
+                <button class="sw-btn" id="tr-on" onclick="toggleTranslator(true)">ON</button>
+                <button class="sw-btn active" id="tr-off" onclick="toggleTranslator(false)">OFF</button>
+            </div>
+            <p style="font-size: 0.75rem; color: #666;">Автоперевод сообщений > 7 символов с префиксом [RU].</p>
+        </div>
+
+        <div class="panel" style="grid-column: span 1;">
+            <h3><i class="fas fa-crown"></i> Лояльность</h3>
+            <div style="font-size: 0.75rem; background: #000; padding: 10px; border-radius: 8px;">
+                👑 Ур. 1: Подписка (1000б) <br>
+                ⭐ Ур. 2: Сообщения (10б) <br>
+                Обычный: Донат (50б за 1$)
+            </div>
+            <table class="loyalty-table">
+                <thead><tr><th>Никнейм</th><th>Баллы</th><th>Ур.</th></tr></thead>
+                <tbody id="loyalty-body">
+                    <tr><td>GamerKing</td><td>10000</td><td>👑 1</td></tr>
+                    <tr><td>Viewer_123</td><td>5000</td><td>⭐ 2</td></tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
     <script>
-        // --- CONFIG ---
-        const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
-        
-        // ДАННЫЕ ИЗ ТВОЕЙ КОНСОЛИ GOOGLE
-        const GOOGLE_CLIENT_ID = '201654569135-6k95o55athv2fi3m9n4rk3eahft1k5ib.apps.googleusercontent.com';
-        const REDIRECT_URI = 'https://aleshabot-production.up.railway.app/callback';
+        // --- ЛОГИКА ЗАТУХАНИЯ ПРИ СОХРАНЕНИИ ---
+        function savePanel(type) {
+            const panel = document.getElementById(`panel-${type}`);
+            const btn = panel.querySelector('.btn-save');
+            const area = panel.querySelector('textarea');
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const tgId = urlParams.get('id');
-        const token = urlParams.get('token');
+            // Имитация сохранения в Supabase
+            console.log(`Saving ${type}...`);
+            
+            // Фиксация (Затухание)
+            btn.classList.add('faded');
+            area.classList.add('faded');
+            btn.innerText = "Зафиксировано";
 
-        let currentUser = null;
-
-        async function init() {
-            if (!tgId || !token) {
-                showError("Ошибка: Доступ запрещен. Используйте ссылку из бота!");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}&web_access_token=eq.${token}`, {
-                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-                });
-                const data = await response.json();
-
-                if (data && data.length > 0) {
-                    currentUser = data[0];
-                    renderUI(currentUser);
-                    updateStats();
-                } else {
-                    showError("Пользователь не найден. Проверьте оплату в боте.");
-                }
-            } catch (e) {
-                showError("Ошибка подключения к базе данных.");
-            }
+            // Слушаем изменения для активации
+            area.addEventListener('input', () => {
+                btn.classList.remove('faded');
+                area.classList.remove('faded');
+                btn.innerText = "Сохранить изменения";
+            }, { once: true });
         }
 
-        function renderUI(user) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('main-ui').style.display = 'block';
-            
-            const plan = (user.plan_type || 'free').toLowerCase();
-            document.getElementById('plan-display').innerText = `Тариф: ${plan.toUpperCase()}`;
-            
-            if (user.bot_persona) document.getElementById('bot-prompt').value = user.bot_persona;
-
-            if (plan === 'free') {
-                lockButton('yt-start', 'YouTube доступен в тарифе STARTER');
-                lockButton('tw-start', 'Twitch доступен в тарифе PRO');
-                lockSettings(true);
-            } else if (plan === 'starter') {
-                lockButton('tw-start', 'Twitch доступен только в тарифе PRO');
-                lockSettings(false);
+        // --- ЛОГИКА ПЕРЕВОДЧИКА ---
+        function toggleTranslator(status) {
+            const onBtn = document.getElementById('tr-on');
+            const offBtn = document.getElementById('tr-off');
+            if(status) {
+                onBtn.classList.add('active'); onBtn.style.opacity = "0.5";
+                offBtn.classList.remove('active'); offBtn.style.opacity = "1";
             } else {
-                lockSettings(false);
+                offBtn.classList.add('active'); offBtn.style.opacity = "0.5";
+                onBtn.classList.remove('active'); onBtn.style.opacity = "1";
             }
         }
-
-        function lockButton(id, msg) {
-            const el = document.getElementById(id);
-            el.classList.add('locked');
-            el.onclick = (e) => {
-                e.preventDefault();
-                alert(msg);
-            };
-        }
-
-        function lockSettings(isLocked) {
-            const area = document.getElementById('bot-prompt');
-            const btn = document.getElementById('save-prompt-btn');
-            if (isLocked) {
-                area.disabled = true;
-                area.placeholder = "Настройка AI недоступна на Free тарифе";
-                btn.classList.add('locked');
-                btn.onclick = () => alert('Обновите тариф для настройки характера ИИ');
-            }
-        }
-
-        function handleYoutubeAuth() {
-            // ПРЯМАЯ АВТОРИЗАЦИЯ GOOGLE (КАК В /info)
-            const scope = encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl');
-            const authUrl = `https://accounts.google.com/o/oauth2/auth` + 
-                            `?client_id=${GOOGLE_CLIENT_ID}` +
-                            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-                            `&scope=${scope}` +
-                            `&response_type=code` +
-                            `&access_type=offline` +
-                            `&prompt=consent` +
-                            `&state=${tgId}`;
-
-            alert('Переходим к авторизации YouTube...');
-            window.location.href = authUrl;
-        }
-
-        function handleTwitchAuth() {
-            alert('Twitch доступен только в тарифе PRO');
-        }
-
-        async function updateStats() {
-            try {
-                const res = await fetch(`${SB_URL}/rest/v1/youtube_logs?select=count`, {
-                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Range-Unit': 'items', 'Prefer': 'count=exact' }
-                });
-                const count = res.headers.get('content-range').split('/')[1];
-                document.getElementById('msg-count').innerText = count || 0;
-            } catch (e) { console.error("Ошибка статистики"); }
-        }
-
-        async function saveSettings() {
-            const newPrompt = document.getElementById('bot-prompt').value;
-            try {
-                const res = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
-                    method: 'PATCH',
-                    headers: { 
-                        'apikey': SB_KEY, 
-                        'Authorization': `Bearer ${SB_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({ bot_persona: newPrompt })
-                });
-                if (res.ok) alert('✅ Характер Алёши успешно сохранен!');
-            } catch (e) {
-                alert('Ошибка при сохранении настроек.');
-            }
-        }
-
-        function showError(msg) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('err-msg').innerText = msg;
-        }
-
-        window.onload = init;
     </script>
 </body>
 </html>
