@@ -3,135 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasper Ai — Dashboard</title>
+    <title>Панель Kasper Ai 🤖</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Основные стили затухания и карточек */
-        :root { --bg: #0a0a0a; --card: #151515; --accent: #00ff88; --text: #eee; }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --accent: #00ff88; --text: #ffffff; --faded: rgba(255, 255, 255, 0.5); }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; width: 100%; max-width: 1200px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 1300px; }
+        .panel { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #333; position: relative; margin-bottom: 20px; }
         
-        .panel { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #222; position: relative; }
-        .panel h3 { font-size: 0.9rem; color: #888; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-
-        /* Эффект затухания */
-        .faded { opacity: 0.5; pointer-events: none; transition: 0.3s; }
-        textarea, input { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; resize: none; transition: 0.3s; }
-        textarea:focus { border-color: var(--accent); outline: none; }
-
-        .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-save:active { transform: scale(0.98); }
-
-        /* Переключатели и значки */
-        .lang-switch, .status-switch { display: flex; gap: 5px; background: #000; padding: 5px; border-radius: 20px; width: fit-content; margin-bottom: 20px; }
-        .sw-btn { padding: 5px 15px; border-radius: 15px; border: none; background: transparent; color: #555; cursor: pointer; font-size: 0.8rem; }
-        .sw-btn.active { background: #333; color: var(--accent); }
-
-        .badge-pro { background: var(--accent); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: auto; }
+        h2 { font-size: 1rem; margin-top: 0; display: flex; align-items: center; gap: 8px; }
+        .badge { background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
         
-        /* Таблица лояльности */
-        .loyalty-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        .loyalty-table th { color: #555; text-align: left; padding: 5px; }
-        .loyalty-table td { padding: 8px 5px; border-bottom: 1px solid #222; }
+        /* Кнопки и инпуты */
+        .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-faded { opacity: 0.5 !important; pointer-events: none; }
+        .text-faded { color: var(--faded) !important; }
+        
+        textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; resize: none; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        
+        .btn-onoff { padding: 10px; border: 1px solid #333; background: #222; color: #fff; border-radius: 8px; cursor: pointer; }
+        .active-on { background: var(--accent) !important; color: #000 !important; }
+        .active-off { background: #ff4444 !important; color: #fff !important; }
+
+        /* Соцсети */
+        .social-input { display: flex; gap: 10px; margin-bottom: 10px; }
+        .social-icons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: #000; padding: 15px; border-radius: 15px; }
+        .icon-box { background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; }
+
+        /* Лояльность */
+        .loyalty-info { background: #000; padding: 10px; border-radius: 8px; font-size: 0.75rem; border: 1px solid #333; line-height: 1.4; }
+        
+        /* Адаптив под мобилки */
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h1 id="main-title">Панель Kasper Ai 🤖</h1>
-        <div class="lang-switch">
-            <button class="sw-btn" id="btn-en">EN</button>
-            <button class="sw-btn active" id="btn-ru">RU</button>
+    <h1 style="margin-bottom: 5px;">Панель Kasper Ai 🤖</h1>
+    <div style="display:flex; gap: 10px; margin-bottom: 15px;">
+        <div style="background:#000; padding: 5px; border-radius: 20px; display:flex;">
+            <button style="padding: 5px 15px; border-radius: 15px; border:none; background:transparent; color:#555;">EN</button>
+            <button style="padding: 5px 15px; border-radius: 15px; border:none; background:#333; color:var(--accent);">RU</button>
         </div>
-        <div id="plan-display" class="badge-pro" style="display:inline-block; font-size: 1rem;">ТАРИФ: PRO</div>
     </div>
+    <div class="badge" id="plan-display" style="margin-bottom: 30px;">ТАРИФ: PRO</div>
 
     <div class="dashboard-grid">
         
-        <div class="panel">
-            <h3><i class="fas fa-chart-line"></i> Мониторинг</h3>
-            <div style="display: flex; justify-content: space-around; text-align: center;">
-                <div><b id="mon-chat">0</b><br><small>Чат</small></div>
-                <div><b id="mon-clean" style="color:#ff4444">0</b><br><small>Чистка</small></div>
-                <div><b id="mon-points" style="color:var(--accent)">0</b><br><small>Баллы</small></div>
+        <div class="column">
+            <div class="panel">
+                <h2><i class="fas fa-chart-line"></i> Мониторинг</h2>
+                <div style="display:flex; justify-content:space-around; text-align:center;">
+                    <div><b style="color:var(--accent)">0</b><br><small>Чат</small></div>
+                    <div><b style="color:#ff4444">0</b><br><small>Чистка</small></div>
+                    <div><b style="color:var(--accent)">0</b><br><small>Баллы</small></div>
+                </div>
+            </div>
+
+            <div class="panel" id="p-char">
+                <h2><i class="fas fa-brain"></i> Характер Kasper Ai</h2>
+                <textarea id="t-char" rows="4" placeholder="Инструкция для ответов бота..."></textarea>
+                <div align="right" style="font-size:0.7rem; color:#555;">0 / 1500</div>
+                <button class="btn-save" onclick="handleSave('p-char', 1500)">Сохранить характер</button>
+            </div>
+
+            <div class="panel" id="p-filter">
+                <h2><i class="fas fa-filter"></i> Фильтр слов Kasper Ai</h2>
+                <textarea id="t-filter" rows="3" placeholder="Слова через запятую..."></textarea>
+                <button class="btn-save" onclick="handleSave('p-filter', 1000)">Сохранить характер</button>
+            </div>
+
+            <div class="panel" id="p-free-filter">
+                <h2><i class="fas fa-filter"></i> Фильтр слов Kasper Ai/Free</h2>
+                <textarea id="t-free-filter" rows="2" placeholder="Free тариф"></textarea>
+                <button class="btn-save" onclick="handleSave('p-free-filter', 150)">Сохранить характер</button>
             </div>
         </div>
 
-        <div class="panel" id="panel-character">
-            <h3><i class="fas fa-brain"></i> Характер Kasper Ai <span class="badge-pro">STARTER | PRO</span></h3>
-            <textarea id="text-character" rows="4" placeholder="Инструкция для ответов бота..."></textarea>
-            <div id="char-count" style="font-size: 0.7rem; text-align: right; color: #555;">0 / 1500</div>
-            <button class="btn-save" onclick="savePanel('character')">Сохранить характер</button>
-        </div>
-
-        <div class="panel" id="panel-filter">
-            <h3><i class="fas fa-shield-halved"></i> Фильтр слов</h3>
-            <textarea id="text-filter" rows="3" placeholder="Слова через запятую..."></textarea>
-            <button class="btn-save" onclick="savePanel('filter')">Сохранить фильтр</button>
-        </div>
-
-        <div class="panel">
-            <h3><i class="fas fa-language"></i> Переводчик</h3>
-            <div class="status-switch">
-                <button class="sw-btn" id="tr-on" onclick="toggleTranslator(true)">ON</button>
-                <button class="sw-btn active" id="tr-off" onclick="toggleTranslator(false)">OFF</button>
+        <div class="column">
+            <div class="panel">
+                <h2><i class="fas fa-plug"></i> Подключение сервисов</h2>
+                <div class="btn-grid">
+                    <button class="btn-onoff"><i class="fab fa-youtube"></i> YouTube</button>
+                    <button class="btn-onoff"><i class="fab fa-twitch"></i> Twitch</button>
+                </div>
             </div>
-            <p style="font-size: 0.75rem; color: #666;">Автоперевод сообщений > 7 символов с префиксом [RU].</p>
-        </div>
 
-        <div class="panel" style="grid-column: span 1;">
-            <h3><i class="fas fa-crown"></i> Лояльность</h3>
-            <div style="font-size: 0.75rem; background: #000; padding: 10px; border-radius: 8px;">
-                👑 Ур. 1: Подписка (1000б) <br>
-                ⭐ Ур. 2: Сообщения (10б) <br>
-                Обычный: Донат (50б за 1$)
+            <div class="panel">
+                <h2><i class="fas fa-power-off"></i> Отключение сервисов</h2>
+                <div class="btn-grid">
+                    <button class="btn-onoff"><i class="fab fa-youtube"></i> YouTube</button>
+                    <button class="btn-onoff"><i class="fab fa-twitch"></i> Twitch</button>
+                </div>
             </div>
-            <table class="loyalty-table">
-                <thead><tr><th>Никнейм</th><th>Баллы</th><th>Ур.</th></tr></thead>
-                <tbody id="loyalty-body">
+
+            <div class="panel">
+                <h2><i class="fas fa-crown"></i> Система лояльности (Loyalty)</h2>
+                <div class="loyalty-info">
+                    <i class="fab fa-youtube" style="color:red"></i> YouTube &nbsp;&nbsp; <i class="fab fa-twitch" style="color:purple"></i> Twitch<br>
+                    Правила бота Kasper Ai:<br>
+                    • Приоритет подписчикам по баллам<br>
+                    • Подписка: 1000, Сообщение: 10, Донат: 50 за 1$<br>
+                    Уровни:<br>
+                    1 Ур: Корона 👑 | 2 Ур: Звездочка ⭐ | 3 Ур: Обычный
+                </div>
+                <table style="width:100%; font-size:0.8rem; margin-top:10px;">
+                    <tr style="color:#555"><td>Никнейм</td><td>Баллы</td><td>Ур.</td></tr>
                     <tr><td>GamerKing</td><td>10000</td><td>👑 1</td></tr>
-                    <tr><td>Viewer_123</td><td>5000</td><td>⭐ 2</td></tr>
-                </tbody>
-            </table>
+                    <tr><td>TwitchBoss</td><td>12000</td><td>👑 1</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="panel">
+                <h2><i class="fas fa-language"></i> Переводчик</h2>
+                <div class="btn-grid">
+                    <button class="btn-onoff active-on">On</button>
+                    <button class="btn-onoff active-off">Off</button>
+                </div>
+            </div>
+
+            <div class="panel" id="p-adv">
+                <h2><i class="fas fa-ad"></i> Реклама Ai</h2>
+                <textarea id="t-adv" rows="2" placeholder="Реклама недоступна на Free тарифе"></textarea>
+                <button class="btn-save" onclick="handleSave('p-adv', 500)">Сохранить Рекламу</button>
+            </div>
+
+            <div class="panel" id="p-greet">
+                <h2><i class="fas fa-hand-sparkles"></i> Приветствие Ai</h2>
+                <textarea id="t-greet" rows="2" placeholder="Free тариф: приветствие"></textarea>
+                <button class="btn-save" onclick="handleSave('p-greet', 150)">Сохранить Приветствие</button>
+            </div>
+
+            <div class="panel" id="p-social">
+                <h2><i class="fas fa-link"></i> Подключение сервисов</h2>
+                <input type="text" placeholder="https://web.telegram.org" style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:8px; border-radius:5px;">
+                <div class="social-icons-grid" style="margin-top:15px;">
+                    <div class="icon-box"><i class="fab fa-youtube"></i></div>
+                    <div class="icon-box"><i class="fab fa-instagram"></i></div>
+                    <div class="icon-box"><i class="fab fa-twitch"></i></div>
+                    <div class="icon-box"><i class="fab fa-discord"></i></div>
+                    <div class="icon-box"><i class="fab fa-tiktok"></i></div>
+                    <div class="icon-box"><i class="fab fa-telegram"></i></div>
+                </div>
+                <button class="btn-save" onclick="handleSave('p-social', 0)">Сохранить</button>
+            </div>
         </div>
 
     </div>
 
     <script>
-        // --- ЛОГИКА ЗАТУХАНИЯ ПРИ СОХРАНЕНИИ ---
-        function savePanel(type) {
-            const panel = document.getElementById(`panel-${type}`);
+        function handleSave(panelId, limit) {
+            const panel = document.getElementById(panelId);
             const btn = panel.querySelector('.btn-save');
-            const area = panel.querySelector('textarea');
+            const area = panel.querySelector('textarea') || panel.querySelector('input');
 
-            // Имитация сохранения в Supabase
-            console.log(`Saving ${type}...`);
-            
-            // Фиксация (Затухание)
-            btn.classList.add('faded');
-            area.classList.add('faded');
-            btn.innerText = "Зафиксировано";
+            // Затухание
+            btn.classList.add('btn-faded');
+            area.classList.add('text-faded');
 
-            // Слушаем изменения для активации
-            area.addEventListener('input', () => {
-                btn.classList.remove('faded');
-                area.classList.remove('faded');
-                btn.innerText = "Сохранить изменения";
+            // Оживление при вводе
+            area.addEventListener('input', function() {
+                btn.classList.remove('btn-faded');
+                area.classList.remove('text-faded');
             }, { once: true });
-        }
-
-        // --- ЛОГИКА ПЕРЕВОДЧИКА ---
-        function toggleTranslator(status) {
-            const onBtn = document.getElementById('tr-on');
-            const offBtn = document.getElementById('tr-off');
-            if(status) {
-                onBtn.classList.add('active'); onBtn.style.opacity = "0.5";
-                offBtn.classList.remove('active'); offBtn.style.opacity = "1";
-            } else {
-                offBtn.classList.add('active'); offBtn.style.opacity = "0.5";
-                onBtn.classList.remove('active'); onBtn.style.opacity = "1";
-            }
         }
     </script>
 </body>
