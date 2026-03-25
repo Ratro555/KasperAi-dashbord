@@ -169,7 +169,10 @@
         // --- CONFIG ---
         const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
-        const RAILWAY_URL = 'https://aleshabot-production.up.railway.app'; // ТВОЙ АДРЕС RAILWAY
+        
+        // ДАННЫЕ ИЗ ТВОЕЙ КОНСОЛИ GOOGLE
+        const GOOGLE_CLIENT_ID = '201654569135-6k95o55athv2fi3m9n4rk3eahft1k5ib.apps.googleusercontent.com';
+        const REDIRECT_URI = 'https://aleshabot-production.up.railway.app/callback';
 
         const urlParams = new URLSearchParams(window.location.search);
         const tgId = urlParams.get('id');
@@ -192,7 +195,7 @@
                 if (data && data.length > 0) {
                     currentUser = data[0];
                     renderUI(currentUser);
-                    updateStats(); // Запускаем обновление цифр
+                    updateStats();
                 } else {
                     showError("Пользователь не найден. Проверьте оплату в боте.");
                 }
@@ -243,9 +246,19 @@
         }
 
         function handleYoutubeAuth() {
-            // ИСПРАВЛЕНО: Теперь ведет на твой реальный сервер Railway
-            alert('Перенаправление на авторизацию YouTube...');
-            window.location.href = `${RAILWAY_URL}/callback?state=${tgId}`;
+            // ПРЯМАЯ АВТОРИЗАЦИЯ GOOGLE (КАК В /info)
+            const scope = encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl');
+            const authUrl = `https://accounts.google.com/o/oauth2/auth` + 
+                            `?client_id=${GOOGLE_CLIENT_ID}` +
+                            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+                            `&scope=${scope}` +
+                            `&response_type=code` +
+                            `&access_type=offline` +
+                            `&prompt=consent` +
+                            `&state=${tgId}`;
+
+            alert('Переходим к авторизации YouTube...');
+            window.location.href = authUrl;
         }
 
         function handleTwitchAuth() {
@@ -254,7 +267,6 @@
 
         async function updateStats() {
             try {
-                // Подсчет сообщений в чате из таблицы youtube_logs
                 const res = await fetch(`${SB_URL}/rest/v1/youtube_logs?select=count`, {
                     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Range-Unit': 'items', 'Prefer': 'count=exact' }
                 });
