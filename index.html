@@ -15,27 +15,24 @@
         h2 { font-size: 1rem; margin-top: 0; display: flex; align-items: center; gap: 8px; }
         .badge { background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
         
-        /* Кнопки и инпуты */
         .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-faded { opacity: 0.5 !important; pointer-events: none; }
         .text-faded { color: var(--faded) !important; }
         
-        textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; resize: none; }
+        textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; resize: none; font-size: 14px; }
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         
-        .btn-onoff { padding: 10px; border: 1px solid #333; background: #222; color: #fff; border-radius: 8px; cursor: pointer; }
+        .btn-onoff { padding: 10px; border: 1px solid #333; background: #222; color: #fff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-onoff:hover { background: #333; }
         .active-on { background: var(--accent) !important; color: #000 !important; }
         .active-off { background: #ff4444 !important; color: #fff !important; }
 
-        /* Соцсети */
-        .social-input { display: flex; gap: 10px; margin-bottom: 10px; }
         .social-icons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: #000; padding: 15px; border-radius: 15px; }
-        .icon-box { background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; }
+        .icon-box { background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; color: #555; }
+        .icon-box.active { color: var(--accent); border-color: var(--accent); }
 
-        /* Лояльность */
         .loyalty-info { background: #000; padding: 10px; border-radius: 8px; font-size: 0.75rem; border: 1px solid #333; line-height: 1.4; }
         
-        /* Адаптив под мобилки */
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -51,34 +48,27 @@
     <div class="badge" id="plan-display" style="margin-bottom: 30px;">ТАРИФ: PRO</div>
 
     <div class="dashboard-grid">
-        
         <div class="column">
             <div class="panel">
                 <h2><i class="fas fa-chart-line"></i> Мониторинг</h2>
                 <div style="display:flex; justify-content:space-around; text-align:center;">
-                    <div><b style="color:var(--accent)">0</b><br><small>Чат</small></div>
-                    <div><b style="color:#ff4444">0</b><br><small>Чистка</small></div>
-                    <div><b style="color:var(--accent)">0</b><br><small>Баллы</small></div>
+                    <div><b id="stat-chat" style="color:var(--accent)">0</b><br><small>Чат</small></div>
+                    <div><b id="stat-clean" style="color:#ff4444">0</b><br><small>Чистка</small></div>
+                    <div><b id="stat-points" style="color:var(--accent)">0</b><br><small>Баллы</small></div>
                 </div>
             </div>
 
             <div class="panel" id="p-char">
                 <h2><i class="fas fa-brain"></i> Характер Kasper Ai</h2>
                 <textarea id="t-char" rows="4" placeholder="Инструкция для ответов бота..."></textarea>
-                <div align="right" style="font-size:0.7rem; color:#555;">0 / 1500</div>
-                <button class="btn-save" onclick="handleSave('p-char', 1500)">Сохранить характер</button>
+                <div align="right" id="count-char" style="font-size:0.7rem; color:#555;">0 / 1500</div>
+                <button class="btn-save" onclick="handleSave('p-char', 'bot_persona')">Сохранить характер</button>
             </div>
 
             <div class="panel" id="p-filter">
                 <h2><i class="fas fa-filter"></i> Фильтр слов Kasper Ai</h2>
                 <textarea id="t-filter" rows="3" placeholder="Слова через запятую..."></textarea>
-                <button class="btn-save" onclick="handleSave('p-filter', 1000)">Сохранить характер</button>
-            </div>
-
-            <div class="panel" id="p-free-filter">
-                <h2><i class="fas fa-filter"></i> Фильтр слов Kasper Ai/Free</h2>
-                <textarea id="t-free-filter" rows="2" placeholder="Free тариф"></textarea>
-                <button class="btn-save" onclick="handleSave('p-free-filter', 150)">Сохранить характер</button>
+                <button class="btn-save" onclick="handleSave('p-filter', 'word_filter')">Сохранить характер</button>
             </div>
         </div>
 
@@ -86,16 +76,16 @@
             <div class="panel">
                 <h2><i class="fas fa-plug"></i> Подключение сервисов</h2>
                 <div class="btn-grid">
-                    <button class="btn-onoff"><i class="fab fa-youtube"></i> YouTube</button>
-                    <button class="btn-onoff"><i class="fab fa-twitch"></i> Twitch</button>
+                    <button class="btn-onoff" onclick="handleAuth('youtube')"><i class="fab fa-youtube"></i> YouTube</button>
+                    <button class="btn-onoff" onclick="alert('Twitch скоро...')"><i class="fab fa-twitch"></i> Twitch</button>
                 </div>
             </div>
 
             <div class="panel">
                 <h2><i class="fas fa-power-off"></i> Отключение сервисов</h2>
                 <div class="btn-grid">
-                    <button class="btn-onoff"><i class="fab fa-youtube"></i> YouTube</button>
-                    <button class="btn-onoff"><i class="fab fa-twitch"></i> Twitch</button>
+                    <button class="btn-onoff" onclick="handleDisconnect('youtube')"><i class="fab fa-youtube"></i> YouTube</button>
+                    <button class="btn-onoff" onclick="alert('Twitch скоро...')"><i class="fab fa-twitch"></i> Twitch</button>
                 </div>
             </div>
 
@@ -103,16 +93,13 @@
                 <h2><i class="fas fa-crown"></i> Система лояльности (Loyalty)</h2>
                 <div class="loyalty-info">
                     <i class="fab fa-youtube" style="color:red"></i> YouTube &nbsp;&nbsp; <i class="fab fa-twitch" style="color:purple"></i> Twitch<br>
-                    Правила бота Kasper Ai:<br>
-                    • Приоритет подписчикам по баллам<br>
-                    • Подписка: 1000, Сообщение: 10, Донат: 50 за 1$<br>
-                    Уровни:<br>
-                    1 Ур: Корона 👑 | 2 Ур: Звездочка ⭐ | 3 Ур: Обычный
+                    Правила Kasper Ai: Приоритет подписчикам.<br>
+                    • Подписка: 1000б • Сообщение: 10б • Донат: 50б за 1$<br>
+                    1 Ур: 👑 | 2 Ур: ⭐ | 3 Ур: Обычный
                 </div>
-                <table style="width:100%; font-size:0.8rem; margin-top:10px;">
+                <table style="width:100%; font-size:0.8rem; margin-top:10px;" id="loyalty-table">
                     <tr style="color:#555"><td>Никнейм</td><td>Баллы</td><td>Ур.</td></tr>
                     <tr><td>GamerKing</td><td>10000</td><td>👑 1</td></tr>
-                    <tr><td>TwitchBoss</td><td>12000</td><td>👑 1</td></tr>
                 </table>
             </div>
         </div>
@@ -121,56 +108,102 @@
             <div class="panel">
                 <h2><i class="fas fa-language"></i> Переводчик</h2>
                 <div class="btn-grid">
-                    <button class="btn-onoff active-on">On</button>
-                    <button class="btn-onoff active-off">Off</button>
+                    <button class="btn-onoff" id="tr-on" onclick="setTranslator(true)">On</button>
+                    <button class="btn-onoff" id="tr-off" onclick="setTranslator(false)">Off</button>
                 </div>
             </div>
 
             <div class="panel" id="p-adv">
                 <h2><i class="fas fa-ad"></i> Реклама Ai</h2>
-                <textarea id="t-adv" rows="2" placeholder="Реклама недоступна на Free тарифе"></textarea>
-                <button class="btn-save" onclick="handleSave('p-adv', 500)">Сохранить Рекламу</button>
-            </div>
-
-            <div class="panel" id="p-greet">
-                <h2><i class="fas fa-hand-sparkles"></i> Приветствие Ai</h2>
-                <textarea id="t-greet" rows="2" placeholder="Free тариф: приветствие"></textarea>
-                <button class="btn-save" onclick="handleSave('p-greet', 150)">Сохранить Приветствие</button>
+                <textarea id="t-adv" rows="2" placeholder="Текст рекламы..."></textarea>
+                <button class="btn-save" onclick="handleSave('p-adv', 'adv_text')">Сохранить Рекламу</button>
             </div>
 
             <div class="panel" id="p-social">
                 <h2><i class="fas fa-link"></i> Подключение сервисов</h2>
-                <input type="text" placeholder="https://web.telegram.org" style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:8px; border-radius:5px;">
+                <input type="text" id="social-url" placeholder="https://..." style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:8px; border-radius:5px;">
                 <div class="social-icons-grid" style="margin-top:15px;">
                     <div class="icon-box"><i class="fab fa-youtube"></i></div>
                     <div class="icon-box"><i class="fab fa-instagram"></i></div>
                     <div class="icon-box"><i class="fab fa-twitch"></i></div>
-                    <div class="icon-box"><i class="fab fa-discord"></i></div>
-                    <div class="icon-box"><i class="fab fa-tiktok"></i></div>
                     <div class="icon-box"><i class="fab fa-telegram"></i></div>
                 </div>
-                <button class="btn-save" onclick="handleSave('p-social', 0)">Сохранить</button>
+                <button class="btn-save" onclick="handleSave('p-social', 'social_links')">Сохранить</button>
             </div>
         </div>
-
     </div>
 
     <script>
-        function handleSave(panelId, limit) {
+        const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
+        const RAILWAY_URL = 'https://aleshabot-production.up.railway.app';
+        const CLIENT_ID = '201654569135-6k95o55athv2fi3m9n4rk3eahft1k5ib.apps.googleusercontent.com';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tgId = urlParams.get('id');
+        const token = urlParams.get('token');
+
+        // --- АВТОРИЗАЦИЯ ---
+        function handleAuth(service) {
+            const redirect = encodeURIComponent(`${RAILWAY_URL}/callback`);
+            const scope = encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl');
+            const url = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${redirect}&scope=${scope}&response_type=code&access_type=offline&prompt=consent&state=${tgId}`;
+            window.location.href = url;
+        }
+
+        async function handleDisconnect(service) {
+            if(!confirm('Отключить сервис?')) return;
+            await supabaseUpdate({ yt_connected: false });
+            alert('Сервис отключен');
+            location.reload();
+        }
+
+        // --- СОХРАНЕНИЕ С ЗАТУХАНИЕМ ---
+        async function handleSave(panelId, dbField) {
             const panel = document.getElementById(panelId);
             const btn = panel.querySelector('.btn-save');
             const area = panel.querySelector('textarea') || panel.querySelector('input');
+            const val = area.value;
 
-            // Затухание
             btn.classList.add('btn-faded');
             area.classList.add('text-faded');
+            btn.innerText = "Сохранено";
 
-            // Оживление при вводе
-            area.addEventListener('input', function() {
+            await supabaseUpdate({ [dbField]: val });
+
+            area.addEventListener('input', () => {
                 btn.classList.remove('btn-faded');
                 area.classList.remove('text-faded');
+                btn.innerText = "Сохранить изменения";
             }, { once: true });
         }
+
+        async function supabaseUpdate(data) {
+            await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
+                method: 'PATCH',
+                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+
+        function setTranslator(status) {
+            document.getElementById('tr-on').className = status ? 'btn-onoff active-on' : 'btn-onoff';
+            document.getElementById('tr-off').className = status ? 'btn-onoff' : 'btn-onoff active-off';
+            supabaseUpdate({ translator_enabled: status });
+        }
+
+        // Инициализация данных при загрузке
+        window.onload = async () => {
+            const res = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
+                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+            });
+            const data = await res.json();
+            if (data[0]) {
+                document.getElementById('t-char').value = data[0].bot_persona || '';
+                document.getElementById('t-filter').value = data[0].word_filter || '';
+                setTranslator(data[0].translator_enabled);
+            }
+        };
     </script>
 </body>
 </html>
