@@ -6,45 +6,27 @@
     <title>Панель Kasper Ai 🤖</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --accent: #00ff88; --text: #ffffff; --faded: rgba(255, 255, 255, 0.5); }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --accent: #00ff88; --text: #ffffff; --faded: rgba(255, 255, 255, 0.5); --red: #ff4d4d; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
         .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 1300px; }
         .panel { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #333; position: relative; margin-bottom: 20px; }
-        
         h2 { font-size: 1rem; margin-top: 0; display: flex; align-items: center; gap: 8px; }
         .badge { background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
-        
         .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-red { background: var(--red) !important; color: white !important; }
         .btn-faded { opacity: 0.5 !important; pointer-events: none; }
-        .text-faded { color: var(--faded) !important; }
-        
-        textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; resize: none; font-size: 14px; }
+        textarea, input { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; font-size: 14px; }
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        
         .btn-onoff { padding: 10px; border: 1px solid #333; background: #222; color: #fff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-onoff:hover { background: #333; }
         .active-on { background: var(--accent) !important; color: #000 !important; }
-        .active-off { background: #ff4444 !important; color: #fff !important; }
-
-        .social-icons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: #000; padding: 15px; border-radius: 15px; }
-        .icon-box { background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; color: #555; }
-        .icon-box.active { color: var(--accent); border-color: var(--accent); }
-
+        .active-off { background: var(--red) !important; color: #fff !important; }
         .loyalty-info { background: #000; padding: 10px; border-radius: 8px; font-size: 0.75rem; border: 1px solid #333; line-height: 1.4; }
-        
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <h1 style="margin-bottom: 5px;">Панель Kasper Ai 🤖</h1>
-    <div style="display:flex; gap: 10px; margin-bottom: 15px;">
-        <div style="background:#000; padding: 5px; border-radius: 20px; display:flex;">
-            <button style="padding: 5px 15px; border-radius: 15px; border:none; background:transparent; color:#555;">EN</button>
-            <button style="padding: 5px 15px; border-radius: 15px; border:none; background:#333; color:var(--accent);">RU</button>
-        </div>
-    </div>
+    <h1>Панель Kasper Ai 🤖</h1>
     <div class="badge" id="plan-display" style="margin-bottom: 30px;">ТАРИФ: PRO</div>
 
     <div class="dashboard-grid">
@@ -53,14 +35,14 @@
                 <h2><i class="fas fa-chart-line"></i> Мониторинг</h2>
                 <div style="display:flex; justify-content:space-around; text-align:center;">
                     <div><b id="stat-chat" style="color:var(--accent)">0</b><br><small>Чат</small></div>
-                    <div><b id="stat-clean" style="color:#ff4444">0</b><br><small>Чистка</small></div>
+                    <div><b id="stat-clean" style="color:var(--red)">0</b><br><small>Чистка</small></div>
                     <div><b id="stat-points" style="color:var(--accent)">0</b><br><small>Баллы</small></div>
                 </div>
             </div>
 
             <div class="panel" id="p-char">
                 <h2><i class="fas fa-brain"></i> Характер Kasper Ai</h2>
-                <textarea id="t-char" rows="4" placeholder="Инструкция для ответов бота..."></textarea>
+                <textarea id="t-char" rows="4" maxlength="1500" oninput="updateCharCount()" placeholder="Инструкция для ответов бота..."></textarea>
                 <div align="right" id="count-char" style="font-size:0.7rem; color:#555;">0 / 1500</div>
                 <button class="btn-save" onclick="handleSave('p-char', 'bot_persona')">Сохранить характер</button>
             </div>
@@ -68,38 +50,34 @@
             <div class="panel" id="p-filter">
                 <h2><i class="fas fa-filter"></i> Фильтр слов Kasper Ai</h2>
                 <textarea id="t-filter" rows="3" placeholder="Слова через запятую..."></textarea>
-                <button class="btn-save" onclick="handleSave('p-filter', 'word_filter')">Сохранить характер</button>
+                <button class="btn-save" onclick="handleSave('p-filter', 'word_filter')">Сохранить фильтр</button>
             </div>
         </div>
 
         <div class="column">
-            <div class="panel">
-                <h2><i class="fas fa-plug"></i> Подключение сервисов</h2>
+            <div class="panel" style="border: 2px solid var(--accent);">
+                <h2><i class="fas fa-play"></i> Управление Стримом</h2>
+                <input type="text" id="streamUrl" placeholder="Вставь ссылку на стрим или ID" style="margin-bottom:10px;">
                 <div class="btn-grid">
-                    <button class="btn-onoff" onclick="handleAuth('youtube')"><i class="fab fa-youtube"></i> YouTube</button>
-                    <button class="btn-onoff" onclick="alert('Twitch скоро...')"><i class="fab fa-twitch"></i> Twitch</button>
+                    <button class="btn-save" onclick="controlBot('start')">СТАРТ</button>
+                    <button class="btn-save btn-red" onclick="controlBot('stop')">СТОП</button>
                 </div>
+                <p id="bot-status" style="font-size:0.8rem; text-align:center; margin-top:10px; color:var(--accent)"></p>
             </div>
 
             <div class="panel">
-                <h2><i class="fas fa-power-off"></i> Отключение сервисов</h2>
-                <div class="btn-grid">
-                    <button class="btn-onoff" onclick="handleDisconnect('youtube')"><i class="fab fa-youtube"></i> YouTube</button>
-                    <button class="btn-onoff" onclick="alert('Twitch скоро...')"><i class="fab fa-twitch"></i> Twitch</button>
-                </div>
+                <h2><i class="fas fa-plug"></i> Подключение Ютуба</h2>
+                <button class="btn-save" onclick="handleAuth('youtube')"><i class="fab fa-youtube"></i> Авторизовать канал</button>
             </div>
 
             <div class="panel">
-                <h2><i class="fas fa-crown"></i> Система лояльности (Loyalty)</h2>
+                <h2><i class="fas fa-crown"></i> Лояльность</h2>
                 <div class="loyalty-info">
-                    <i class="fab fa-youtube" style="color:red"></i> YouTube &nbsp;&nbsp; <i class="fab fa-twitch" style="color:purple"></i> Twitch<br>
-                    Правила Kasper Ai: Приоритет подписчикам.<br>
-                    • Подписка: 1000б • Сообщение: 10б • Донат: 50б за 1$<br>
-                    1 Ур: 👑 | 2 Ур: ⭐ | 3 Ур: Обычный
+                    1000б за подписку. 10б за сообщение.
                 </div>
                 <table style="width:100%; font-size:0.8rem; margin-top:10px;" id="loyalty-table">
-                    <tr style="color:#555"><td>Никнейм</td><td>Баллы</td><td>Ур.</td></tr>
-                    <tr><td>GamerKing</td><td>10000</td><td>👑 1</td></tr>
+                    <tr><td>Никнейм</td><td>Баллы</td></tr>
+                    <tr><td>GamerKing</td><td>10000</td></tr>
                 </table>
             </div>
         </div>
@@ -120,15 +98,9 @@
             </div>
 
             <div class="panel" id="p-social">
-                <h2><i class="fas fa-link"></i> Подключение сервисов</h2>
-                <input type="text" id="social-url" placeholder="https://..." style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:8px; border-radius:5px;">
-                <div class="social-icons-grid" style="margin-top:15px;">
-                    <div class="icon-box"><i class="fab fa-youtube"></i></div>
-                    <div class="icon-box"><i class="fab fa-instagram"></i></div>
-                    <div class="icon-box"><i class="fab fa-twitch"></i></div>
-                    <div class="icon-box"><i class="fab fa-telegram"></i></div>
-                </div>
-                <button class="btn-save" onclick="handleSave('p-social', 'social_links')">Сохранить</button>
+                <h2><i class="fas fa-link"></i> Ссылка !social</h2>
+                <input type="text" id="t-social" placeholder="https://t.me/твойканал">
+                <button class="btn-save" onclick="handleSave('p-social', 'social_links')">Сохранить ссылку</button>
             </div>
         </div>
     </div>
@@ -137,45 +109,42 @@
         const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
         const RAILWAY_URL = 'https://aleshabot-production.up.railway.app';
-        const CLIENT_ID = '201654569135-6k95o55athv2fi3m9n4rk3eahft1k5ib.apps.googleusercontent.com';
 
         const urlParams = new URLSearchParams(window.location.search);
         const tgId = urlParams.get('id');
         const token = urlParams.get('token');
 
-        // --- АВТОРИЗАЦИЯ ---
-        function handleAuth(service) {
-            const redirect = encodeURIComponent(`${RAILWAY_URL}/callback`);
-            const scope = encodeURIComponent('https://www.googleapis.com/auth/youtube.force-ssl');
-            const url = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${redirect}&scope=${scope}&response_type=code&access_type=offline&prompt=consent&state=${tgId}`;
-            window.location.href = url;
+        // --- УПРАВЛЕНИЕ БОТОМ ---
+        async function controlBot(action) {
+            const url = document.getElementById('streamUrl').value;
+            const status = document.getElementById('bot-status');
+            status.innerText = "⏳ Жду ответа...";
+            
+            try {
+                const res = await fetch(`${RAILWAY_URL}/bot_control?action=${action}&id=${tgId}&token=${token}&stream=${encodeURIComponent(url)}`);
+                const data = await res.json();
+                status.innerText = data.message;
+            } catch (e) {
+                status.innerText = "❌ Ошибка связи с ботом";
+            }
         }
 
-        async function handleDisconnect(service) {
-            if(!confirm('Отключить сервис?')) return;
-            await supabaseUpdate({ yt_connected: false });
-            alert('Сервис отключен');
-            location.reload();
+        // --- АВТОРИЗАЦИЯ ЮТУБ ---
+        function handleAuth() {
+            window.location.href = `${RAILWAY_URL}/login?state=${tgId}`;
         }
 
-        // --- СОХРАНЕНИЕ С ЗАТУХАНИЕМ ---
+        // --- СОХРАНЕНИЕ ---
         async function handleSave(panelId, dbField) {
             const panel = document.getElementById(panelId);
             const btn = panel.querySelector('.btn-save');
             const area = panel.querySelector('textarea') || panel.querySelector('input');
             const val = area.value;
 
-            btn.classList.add('btn-faded');
-            area.classList.add('text-faded');
-            btn.innerText = "Сохранено";
-
+            btn.innerText = "⌛ Сохраняю...";
             await supabaseUpdate({ [dbField]: val });
-
-            area.addEventListener('input', () => {
-                btn.classList.remove('btn-faded');
-                area.classList.remove('text-faded');
-                btn.innerText = "Сохранить изменения";
-            }, { once: true });
+            btn.innerText = "✅ Сохранено";
+            setTimeout(() => { btn.innerText = "Сохранить изменения"; }, 2000);
         }
 
         async function supabaseUpdate(data) {
@@ -186,24 +155,38 @@
             });
         }
 
+        function updateCharCount() {
+            const text = document.getElementById('t-char').value;
+            document.getElementById('count-char').innerText = `${text.length} / 1500`;
+        }
+
         function setTranslator(status) {
             document.getElementById('tr-on').className = status ? 'btn-onoff active-on' : 'btn-onoff';
             document.getElementById('tr-off').className = status ? 'btn-onoff' : 'btn-onoff active-off';
             supabaseUpdate({ translator_enabled: status });
         }
 
-        // Инициализация данных при загрузке
-        window.onload = async () => {
+        // --- ЖИВОЙ МОНИТОРИНГ ---
+        async function loadData() {
             const res = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
                 headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
             });
             const data = await res.json();
             if (data[0]) {
-                document.getElementById('t-char').value = data[0].bot_persona || '';
-                document.getElementById('t-filter').value = data[0].word_filter || '';
-                setTranslator(data[0].translator_enabled);
+                const u = data[0];
+                document.getElementById('stat-chat').innerText = u.stat_chat || 0;
+                document.getElementById('stat-clean').innerText = u.stat_clean || 0;
+                document.getElementById('t-char').value = u.bot_persona || '';
+                document.getElementById('t-filter').value = u.word_filter || '';
+                document.getElementById('t-adv').value = u.adv_text || '';
+                document.getElementById('t-social').value = u.social_links || '';
+                setTranslator(u.translator_enabled);
+                updateCharCount();
             }
-        };
+        }
+
+        window.onload = loadData;
+        setInterval(loadData, 10000); // Обновлять стату раз в 10 секунд
     </script>
 </body>
 </html>
