@@ -10,100 +10,107 @@
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 1300px; }
         .panel { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #333; position: relative; }
-        h2 { font-size: 1rem; margin-top: 0; display: flex; align-items: center; gap: 8px; }
+        h2 { font-size: 0.9rem; margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--faded); text-transform: uppercase; }
         .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-instant { background: #333; color: white; width: 50px; flex-shrink: 0; margin-top: 10px; border-radius: 8px; border: 1px solid #444; cursor: pointer; }
         .btn-red { background: var(--red) !important; color: white !important; }
-        .btn-ban { padding: 4px 8px; font-size: 10px; background: var(--red); color: white; border: none; border-radius: 4px; cursor: pointer; }
         textarea, input { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; font-size: 14px; }
+        
+        /* Шкала квоты */
+        .quota-container { margin-top: 15px; }
+        .quota-bg { background: #222; border-radius: 20px; height: 12px; width: 100%; overflow: hidden; border: 1px solid #333; }
+        #quota-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.5s ease; }
+        
         .timer-settings { display: flex; align-items: center; gap: 10px; margin-top: 10px; background: #222; padding: 8px; border-radius: 8px; }
-        .timer-settings input { width: 80px; text-align: center; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .timer-settings input { width: 60px; text-align: center; padding: 5px; }
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(16px); }
+        
         .user-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; font-size: 13px; }
-        #quota-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; margin-top: 10px; display: inline-block; }
+        .btn-ban { background: var(--red); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+        
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <h1>Панель Kasper Ai 🤖</h1>
-    <div id="plan-display" style="margin-bottom: 20px; color: var(--accent); font-weight: bold;">ТАРИФ: PRO</div>
+    <div style="background: var(--accent); color: black; padding: 4px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 30px; font-size: 0.8rem;">ТАРИФ: PRO</div>
 
     <div class="dashboard-grid">
         <div class="column">
             <div class="panel">
-                <h2><i class="fas fa-chart-line"></i> Мониторинг</h2>
-                <div style="display:flex; justify-content:space-around; text-align:center;">
-                    <div><b id="stat-chat" style="color:var(--accent)">0</b><br><small>Чат</small></div>
-                    <div><b id="stat-clean" style="color:var(--red)">0</b><br><small>Чистка</small></div>
+                <h2><i class="fas fa-chart-line"></i> Мониторинг Квоты</h2>
+                <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom: 10px;">
+                    <div><b id="stat-chat" style="color:var(--accent)">0</b><br><small style="color:var(--faded)">Чат</small></div>
+                    <div><b id="stat-clean" style="color:var(--red)">0</b><br><small style="color:var(--faded)">Чистка</small></div>
+                    <div><b id="quota-val" style="color:var(--text)">0</b><br><small style="color:var(--faded)">Баллы</small></div>
                 </div>
-                <div id="quota-badge" style="background: #222; color: #888;">Проверка квоты...</div>
+                <div class="quota-container">
+                    <div class="quota-bg"><div id="quota-fill"></div></div>
+                    <div style="display:flex; justify-content: space-between; font-size: 10px; margin-top: 5px; color: var(--faded);">
+                        <span>0</span><span id="quota-percent">0%</span><span>10,000</span>
+                    </div>
+                </div>
             </div>
 
             <div class="panel" style="margin-top:20px;">
-                <h2><i class="fas fa-brain"></i> Интеллект Gemini</h2>
-                <div class="timer-settings">
-                    <span>Включить ИИ ответы:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="ai_enabled" onchange="toggleField('ai_enabled', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <textarea id="t-char" rows="4" style="margin-top:10px;" placeholder="Характер бота..."></textarea>
+                <h2><i class="fas fa-brain"></i> Характер Kasper Ai</h2>
+                <textarea id="t-char" rows="6" style="margin-top:10px;" placeholder="Твой стиль: спартанский..."></textarea>
                 <button class="btn-save" onclick="saveField('bot_persona', 't-char')">Сохранить характер</button>
             </div>
         </div>
 
         <div class="column">
-            <div class="panel" style="border: 2px solid var(--accent);">
+            <div class="panel" style="border: 1px solid var(--accent);">
                 <h2><i class="fas fa-play"></i> Управление Стримом</h2>
                 <input type="text" id="streamUrl" placeholder="Ссылка на стрим">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <div style="display:flex; gap:10px; margin-top:10px;">
                     <button class="btn-save" onclick="controlBot('start')">СТАРТ</button>
                     <button class="btn-save btn-red" onclick="controlBot('stop')">СТОП</button>
                 </div>
-                <p id="bot-status" style="font-size:0.8rem; text-align:center; margin-top:10px; color:var(--accent)"></p>
+                <p id="bot-status" style="font-size:0.7rem; text-align:center; margin-top:8px; color:var(--accent)"></p>
             </div>
 
             <div class="panel" style="margin-top:20px;">
-                <h2><i class="fas fa-ad"></i> Реклама Ai</h2>
-                <textarea id="t-ads" rows="2" placeholder="Текст рекламы..."></textarea>
-                <div class="timer-settings">
-                    <input type="number" id="ads_timer" placeholder="Сек">
-                    <label class="switch">
-                        <input type="checkbox" id="ads_enabled">
-                        <span class="slider"></span>
-                    </label>
-                    <small>Вкл</small>
+                <h2><i class="fas fa-users"></i> Последние в чате</h2>
+                <div id="user-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                    <div class="user-row">Ожидание сообщений...</div>
                 </div>
-                <button class="btn-save" onclick="saveTimedTask('ads')">Сохранить Рекламу</button>
             </div>
         </div>
 
         <div class="column">
             <div class="panel">
-                <h2><i class="fas fa-users"></i> Последние в чате</h2>
-                <div id="user-list" style="max-height: 150px; overflow-y: auto;">
-                    <div class="user-row">Ожидание чата...</div>
+                <h2><i class="fas fa-ad"></i> Реклама Ai</h2>
+                <textarea id="t-ads" rows="3" placeholder="Текст рекламы..."></textarea>
+                <div class="timer-settings">
+                    <input type="number" id="ads_timer" value="300">
+                    <small>сек.</small>
+                    <label class="switch"><input type="checkbox" id="ads_enabled"><span class="slider"></span></label>
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-save" onclick="saveTimedTask('ads')">Сохранить</button>
+                    <button class="btn-instant" onclick="sendInstant('t-ads')">🚀</button>
                 </div>
             </div>
 
             <div class="panel" style="margin-top:20px;">
                 <h2><i class="fas fa-hand-sparkles"></i> Авто-Приветствие</h2>
-                <textarea id="t-greet" rows="2" placeholder="Текст приветствия..."></textarea>
+                <textarea id="t-greet" rows="3" placeholder="Текст приветствия..."></textarea>
                 <div class="timer-settings">
-                    <input type="number" id="greet_timer" placeholder="Сек">
-                    <label class="switch">
-                        <input type="checkbox" id="greet_enabled">
-                        <span class="slider"></span>
-                    </label>
-                    <small>Вкл</small>
+                    <input type="number" id="greet_timer" value="1200">
+                    <small>сек.</small>
+                    <label class="switch"><input type="checkbox" id="greet_enabled"><span class="slider"></span></label>
                 </div>
-                <button class="btn-save" onclick="saveTimedTask('greet')">Сохранить Приветствие</button>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-save" onclick="saveTimedTask('greet')">Сохранить</button>
+                    <button class="btn-instant" onclick="sendInstant('t-greet')">🚀</button>
+                </div>
             </div>
         </div>
     </div>
@@ -124,25 +131,32 @@
             document.getElementById('bot-status').innerText = d.msg || d.message;
         }
 
+        async function sendInstant(inputId) {
+            const text = document.getElementById(inputId).value;
+            const stream = document.getElementById('streamUrl').value;
+            if(!text || !stream) return alert("Введите текст и ссылку на стрим!");
+            
+            const res = await fetch(`${RAILWAY_URL}/instant_send`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ id: tgId, token: token, text: text, stream_url: stream })
+            });
+            if(res.ok) alert("🚀 Отправлено!");
+        }
+
         async function manualBan(channelId) {
             const stream = document.getElementById('streamUrl').value;
-            if(!stream) return alert("Сначала вставь ссылку на стрим!");
             const res = await fetch(`${RAILWAY_URL}/manual_ban`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ id: tgId, token: token, target_id: channelId, video_id: stream })
             });
-            if(res.ok) alert("🔨 Забанен!");
+            if(res.ok) alert("🔨 Нарушитель удален!");
         }
 
         async function saveField(f, id) {
-            const val = document.getElementById(id).value;
-            await supabaseUpdate({ [f]: val });
+            await supabaseUpdate({ [f]: document.getElementById(id).value });
             alert("✅ Сохранено!");
-        }
-
-        async function toggleField(f, val) {
-            await supabaseUpdate({ [f]: val });
         }
 
         async function saveTimedTask(p) {
@@ -164,7 +178,6 @@
         }
 
         async function loadData() {
-            // Загрузка юзера
             const rUser = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
                 headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
             });
@@ -173,7 +186,6 @@
                 const u = uArr[0];
                 document.getElementById('stat-chat').innerText = u.stat_chat || 0;
                 document.getElementById('stat-clean').innerText = u.stat_clean || 0;
-                document.getElementById('ai_enabled').checked = u.ai_enabled;
                 document.getElementById('t-char').value = u.bot_persona || '';
                 
                 // Реклама
@@ -186,17 +198,17 @@
                 document.getElementById('greet_timer').value = u.greet_timer || 1200;
                 document.getElementById('greet_enabled').checked = u.greet_enabled;
 
-                // Квота
-                const q = document.getElementById('quota-badge');
-                if(u.quota_status === 'EXCEEDED') {
-                    q.innerText = "⚠️ КВОТА ЗАКОНЧИЛАСЬ"; q.style.color = "#ff4d4d";
-                } else {
-                    q.innerText = "✅ КВОТА В ПОРЯДКЕ"; q.style.color = "#00ff88";
-                }
+                // КВОТА (ШКАЛА)
+                const used = u.used_quota || 0;
+                const percent = Math.min((used / 10000) * 100, 100);
+                document.getElementById('quota-val').innerText = used;
+                document.getElementById('quota-fill').style.width = percent + '%';
+                document.getElementById('quota-percent').innerText = Math.round(percent) + '%';
+                document.getElementById('quota-fill').style.background = percent > 80 ? 'var(--red)' : 'var(--accent)';
             }
 
-            // Загрузка зрителей
-            const rChat = await fetch(`${SB_URL}/rest/v1/chat_activity?user_id=eq.${tgId}&order=last_seen.desc&limit=5`, {
+            // Зрители
+            const rChat = await fetch(`${SB_URL}/rest/v1/chat_activity?user_id=eq.${tgId}&order=last_seen.desc&limit=8`, {
                 headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
             });
             const cArr = await rChat.json();
@@ -206,7 +218,7 @@
                     <span>${c.display_name}</span>
                     <button class="btn-ban" onclick="manualBan('${c.channel_id}')">БАН</button>
                 </div>
-            `).join('') || "В чате пусто";
+            `).join('') || "Чат пока спит...";
         }
 
         window.onload = loadData;
