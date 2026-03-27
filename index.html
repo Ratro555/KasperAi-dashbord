@@ -13,6 +13,7 @@
         h2 { font-size: 1rem; margin-top: 0; display: flex; align-items: center; gap: 8px; }
         .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-red { background: var(--red) !important; color: white !important; }
+        .btn-ban { padding: 4px 8px; font-size: 10px; background: var(--red); color: white; border: none; border-radius: 4px; cursor: pointer; }
         textarea, input { width: 100%; background: #111; border: 1px solid #333; color: #fff; border-radius: 8px; padding: 10px; box-sizing: border-box; font-size: 14px; }
         .timer-settings { display: flex; align-items: center; gap: 10px; margin-top: 10px; background: #222; padding: 8px; border-radius: 8px; }
         .timer-settings input { width: 80px; text-align: center; }
@@ -22,7 +23,8 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; font-size: 13px; }
+        #quota-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; margin-top: 10px; display: inline-block; }
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -39,6 +41,7 @@
                     <div><b id="stat-chat" style="color:var(--accent)">0</b><br><small>Чат</small></div>
                     <div><b id="stat-clean" style="color:var(--red)">0</b><br><small>Чистка</small></div>
                 </div>
+                <div id="quota-badge" style="background: #222; color: #888;">Проверка квоты...</div>
             </div>
 
             <div class="panel" style="margin-top:20px;">
@@ -46,7 +49,7 @@
                 <div class="timer-settings">
                     <span>Включить ИИ ответы:</span>
                     <label class="switch">
-                        <input type="checkbox" id="ai_enabled" onchange="toggleAI(this.checked)">
+                        <input type="checkbox" id="ai_enabled" onchange="toggleField('ai_enabled', this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -59,7 +62,7 @@
             <div class="panel" style="border: 2px solid var(--accent);">
                 <h2><i class="fas fa-play"></i> Управление Стримом</h2>
                 <input type="text" id="streamUrl" placeholder="Ссылка на стрим">
-                <div class="btn-grid">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
                     <button class="btn-save" onclick="controlBot('start')">СТАРТ</button>
                     <button class="btn-save btn-red" onclick="controlBot('stop')">СТОП</button>
                 </div>
@@ -68,10 +71,9 @@
 
             <div class="panel" style="margin-top:20px;">
                 <h2><i class="fas fa-ad"></i> Реклама Ai</h2>
-                <textarea id="t-adv" rows="2" placeholder="Текст рекламы..."></textarea>
+                <textarea id="t-ads" rows="2" placeholder="Текст рекламы..."></textarea>
                 <div class="timer-settings">
                     <input type="number" id="ads_timer" placeholder="Сек">
-                    <span>сек.</span>
                     <label class="switch">
                         <input type="checkbox" id="ads_enabled">
                         <span class="slider"></span>
@@ -84,18 +86,10 @@
 
         <div class="column">
             <div class="panel">
-                <h2><i class="fas fa-link"></i> Соцсети по таймеру</h2>
-                <input type="text" id="t-social" placeholder="Ссылка (например, ТГ)">
-                <div class="timer-settings">
-                    <input type="number" id="social_timer" placeholder="Сек">
-                    <span>сек.</span>
-                    <label class="switch">
-                        <input type="checkbox" id="social_enabled">
-                        <span class="slider"></span>
-                    </label>
-                    <small>Вкл</small>
+                <h2><i class="fas fa-users"></i> Последние в чате</h2>
+                <div id="user-list" style="max-height: 150px; overflow-y: auto;">
+                    <div class="user-row">Ожидание чата...</div>
                 </div>
-                <button class="btn-save" onclick="saveTimedTask('social')">Сохранить Соцсети</button>
             </div>
 
             <div class="panel" style="margin-top:20px;">
@@ -103,7 +97,6 @@
                 <textarea id="t-greet" rows="2" placeholder="Текст приветствия..."></textarea>
                 <div class="timer-settings">
                     <input type="number" id="greet_timer" placeholder="Сек">
-                    <span>сек.</span>
                     <label class="switch">
                         <input type="checkbox" id="greet_enabled">
                         <span class="slider"></span>
@@ -120,91 +113,104 @@
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
         const RAILWAY_URL = 'https://aleshabot-production.up.railway.app';
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const tgId = urlParams.get('id');
-        const token = urlParams.get('token');
+        const params = new URLSearchParams(window.location.search);
+        const tgId = params.get('id');
+        const token = params.get('token');
 
-        // --- УПРАВЛЕНИЕ БОТОМ ---
         async function controlBot(action) {
-            const url = document.getElementById('streamUrl').value;
-            const status = document.getElementById('bot-status');
-            status.innerText = "⏳ Отправка команды...";
-            try {
-                const res = await fetch(`${RAILWAY_URL}/bot_control?action=${action}&id=${tgId}&token=${token}&stream=${encodeURIComponent(url)}`);
-                const data = await res.json();
-                status.innerText = data.message;
-            } catch (e) { status.innerText = "❌ Ошибка связи"; }
+            const stream = document.getElementById('streamUrl').value;
+            const res = await fetch(`${RAILWAY_URL}/bot_control?action=${action}&id=${tgId}&token=${token}&stream=${encodeURIComponent(stream)}`);
+            const d = await res.json();
+            document.getElementById('bot-status').innerText = d.msg || d.message;
         }
 
-        // --- СОХРАНЕНИЕ ПРОСТЫХ ПОЛЕЙ ---
-        async function saveField(field, inputId) {
-            const val = document.getElementById(inputId).value;
-            await supabaseUpdate({ [field]: val });
+        async function manualBan(channelId) {
+            const stream = document.getElementById('streamUrl').value;
+            if(!stream) return alert("Сначала вставь ссылку на стрим!");
+            const res = await fetch(`${RAILWAY_URL}/manual_ban`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ id: tgId, token: token, target_id: channelId, video_id: stream })
+            });
+            if(res.ok) alert("🔨 Забанен!");
+        }
+
+        async function saveField(f, id) {
+            const val = document.getElementById(id).value;
+            await supabaseUpdate({ [f]: val });
             alert("✅ Сохранено!");
         }
 
-        // --- ВКЛЮЧАТЕЛЬ ИИ ---
-        async function toggleAI(status) {
-            await supabaseUpdate({ ai_enabled: status });
+        async function toggleField(f, val) {
+            await supabaseUpdate({ [f]: val });
         }
 
-        // --- СОХРАНЕНИЕ ЗАДАЧ С ТАЙМЕРАМИ ---
-        async function saveTimedTask(prefix) {
+        async function saveTimedTask(p) {
             const data = {
-                [`${prefix}_text`]: document.getElementById(`t-${prefix}`).value,
-                [`${prefix}_timer`]: parseInt(document.getElementById(`${prefix}_timer`).value) || 300,
-                [`${prefix}_enabled`]: document.getElementById(`${prefix}_enabled`).checked
+                [`${p}_text`]: document.getElementById(`t-${p}`).value,
+                [`${p}_timer`]: parseInt(document.getElementById(`${p}_timer`).value) || 300,
+                [`${p}_enabled`]: document.getElementById(`${p}_enabled`).checked
             };
-            // Для соцсетей поле называется иначе в базе
-            if(prefix === 'social') {
-                data.social_links = document.getElementById('t-social').value;
-                delete data.social_text;
-            }
             await supabaseUpdate(data);
-            alert("✅ Настройки таймера обновлены!");
+            alert("✅ Обновлено!");
         }
 
-        async function supabaseUpdate(data) {
+        async function supabaseUpdate(d) {
             await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
                 method: 'PATCH',
                 headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(d)
             });
         }
 
-        // --- ЗАГРУЗКА ДАННЫХ ---
         async function loadData() {
-            const res = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
+            // Загрузка юзера
+            const rUser = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
                 headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
             });
-            const data = await res.json();
-            if (data[0]) {
-                const u = data[0];
+            const uArr = await rUser.json();
+            if (uArr[0]) {
+                const u = uArr[0];
                 document.getElementById('stat-chat').innerText = u.stat_chat || 0;
                 document.getElementById('stat-clean').innerText = u.stat_clean || 0;
-                
                 document.getElementById('ai_enabled').checked = u.ai_enabled;
                 document.getElementById('t-char').value = u.bot_persona || '';
                 
                 // Реклама
-                document.getElementById('t-adv').value = u.adv_text || '';
+                document.getElementById('t-ads').value = u.ads_text || '';
                 document.getElementById('ads_timer').value = u.ads_timer || 300;
                 document.getElementById('ads_enabled').checked = u.ads_enabled;
 
-                // Соцсети
-                document.getElementById('t-social').value = u.social_links || '';
-                document.getElementById('social_timer').value = u.social_timer || 600;
-                document.getElementById('social_enabled').checked = u.social_enabled;
-
                 // Приветствие
                 document.getElementById('t-greet').value = u.greet_text || '';
-                document.getElementById('greet_timer').value = u.greet_timer || 1800;
+                document.getElementById('greet_timer').value = u.greet_timer || 1200;
                 document.getElementById('greet_enabled').checked = u.greet_enabled;
+
+                // Квота
+                const q = document.getElementById('quota-badge');
+                if(u.quota_status === 'EXCEEDED') {
+                    q.innerText = "⚠️ КВОТА ЗАКОНЧИЛАСЬ"; q.style.color = "#ff4d4d";
+                } else {
+                    q.innerText = "✅ КВОТА В ПОРЯДКЕ"; q.style.color = "#00ff88";
+                }
             }
+
+            // Загрузка зрителей
+            const rChat = await fetch(`${SB_URL}/rest/v1/chat_activity?user_id=eq.${tgId}&order=last_seen.desc&limit=5`, {
+                headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+            });
+            const cArr = await rChat.json();
+            const list = document.getElementById('user-list');
+            list.innerHTML = cArr.map(c => `
+                <div class="user-row">
+                    <span>${c.display_name}</span>
+                    <button class="btn-ban" onclick="manualBan('${c.channel_id}')">БАН</button>
+                </div>
+            `).join('') || "В чате пусто";
         }
 
         window.onload = loadData;
-        setInterval(loadData, 15000);
+        setInterval(loadData, 10000);
     </script>
 </body>
 </html>
