@@ -141,6 +141,14 @@
                     <button class="btn-instant" onclick="sendInstant('t-greet')">🚀</button>
                 </div>
             </div>
+            <div class="panel" style="margin-top:20px; border: 1px solid var(--red);">
+    <h2><i class="fas fa-filter"></i> Фильтр матов (свои слова)</h2>
+    <textarea id="t-bad-words" rows="3" placeholder="лох, дурак, спам (через запятую)"></textarea>
+    <p style="font-size: 10px; color: var(--faded); margin-top: 5px;">
+        *Эти слова добавятся к базовому списку "пидор, сука..."
+    </p>
+    <button class="btn-save" onclick="saveField('word_filter', 't-bad-words')">Сохранить фильтр</button>
+</div>
         </div>
     </div>
 
