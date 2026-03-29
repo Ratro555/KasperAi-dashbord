@@ -1,280 +1,251 @@
 <!DOCTYPE html>
-
-<html lang="ru"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Панель Kasper Ai 🤖</title>
-<!-- Load Space Grotesk Font -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS v3 with Plugins -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Tailwind Configuration -->
-<script data-purpose="tailwind-config">
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'neon-green': '#00ff88',
-            'dark-bg': '#0a0a0a',
-            'card-bg': '#161616',
-            'border-gray': '#262626',
-            'stop-red': '#ff4c4c',
-          },
-          fontFamily: {
-            sans: ['Space Grotesk', 'sans-serif'],
-          },
-          borderRadius: {
-            'eight': '8px',
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Панель Kasper Ai 🤖</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script data-purpose="tailwind-config">
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'neon-green': '#00ff88',
+                'dark-bg': '#0a0a0a',
+                'card-bg': '#161616',
+                'border-gray': '#262626',
+                'stop-red': '#ff4c4c',
+              },
+              fontFamily: {
+                sans: ['Space Grotesk', 'sans-serif'],
+              },
+              borderRadius: {
+                'eight': '8px',
+              }
+            }
           }
         }
-      }
-    }
-  </script>
-<!-- Custom Styles for UI Enhancements -->
-<style data-purpose="custom-ui-effects">
-    body {
-      background-color: #0a0a0a;
-      color: #ffffff;
-      font-family: 'Space Grotesk', sans-serif;
-    }
-    
-    .glow-hover:hover {
-      box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
-    }
-    
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #1a1a1a;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #333;
-      border-radius: 10px;
-    }
-    
-    .toggle-checkbox:checked {
-      right: 0;
-      background-color: #00ff88;
-    }
-    .toggle-checkbox:checked + .toggle-label {
-      background-color: #00ff88;
-    }
-
-    input[type="text"], textarea {
-      background-color: #000000 !important;
-      border-color: #262626 !important;
-      color: #ffffff !important;
-    }
-    
-    input[type="text"]:focus, textarea:focus {
-      border-color: #00ff88 !important;
-      ring-color: #00ff88 !important;
-      outline: none;
-    }
-
-    .neon-border {
-      border: 1px solid #262626;
-      transition: border-color 0.3s ease;
-    }
-    .neon-border:hover {
-      border-color: #00ff88;
-    }
-  </style>
+    </script>
+    <style data-purpose="custom-ui-effects">
+        body { background-color: #0a0a0a; color: #ffffff; font-family: 'Space Grotesk', sans-serif; }
+        .glow-hover:hover { box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a1a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .toggle-checkbox:checked { right: 0; background-color: #00ff88; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #00ff88; }
+        input[type="text"], textarea { background-color: #000000 !important; border-color: #262626 !important; color: #ffffff !important; }
+        input[type="text"]:focus, textarea:focus { border-color: #00ff88 !important; ring-color: #00ff88 !important; outline: none; }
+        .neon-border { border: 1px solid #262626; transition: border-color 0.3s ease; }
+        .neon-border:hover { border-color: #00ff88; }
+    </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
-<!-- BEGIN: Header Section -->
+
 <header class="flex flex-col items-center mb-10" data-purpose="main-header">
-<h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-      Панель Kasper Ai <span aria-label="robot" role="img">🤖</span>
-</h1>
-<div class="bg-neon-green text-black px-4 py-1 rounded-full text-xs font-bold tracking-widest">
-      ТАРИФ: PRO
+    <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+          Панель Kasper Ai <span aria-label="robot" role="img">🤖</span>
+    </h1>
+    <div class="bg-neon-green text-black px-4 py-1 rounded-full text-xs font-bold tracking-widest">
+          ТАРИФ: PRO
     </div>
 </header>
-<!-- END: Header Section -->
-<!-- BEGIN: Dashboard Grid -->
-<main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-purpose="dashboard-grid">
-<!-- COLUMN 1 -->
-<div class="flex flex-col gap-6" data-purpose="column-one">
-<!-- BEGIN: Character Panel -->
-<section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="character-settings">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Характер Kasper Ai
-        </h2>
-<textarea class="w-full h-40 custom-scrollbar p-3 rounded-md text-sm mb-4 resize-none" placeholder="Твой стиль: спартанский. Отвечай максимально коротко...">Твой стиль: спартанский. Отвечай максимально коротко, без приветствий и лишних вежливых фраз, если о них не просили. Используй минимум слов, но сохраняй глубокий смысл. Даже если лимит позволяет писать больше, старайся уложиться в одно короткое предложение или пару слов.</textarea>
-<button class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all glow-hover">
-          Сохранить характер
-        </button>
-</section>
-<!-- END: Character Panel -->
-<!-- BEGIN: Social List Panel -->
-<section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="social-settings">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Список соцсетей
-        </h2>
-<div class="flex gap-2 mb-4">
-<input class="flex-grow p-2 rounded-md text-sm" placeholder="Вставьте ссылку (TG, VK, YT...)" type="text"/>
-<button class="bg-zinc-800 hover:bg-zinc-700 px-4 rounded-md">+</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="bg-zinc-900 border border-border-gray px-2 py-1 rounded text-[10px] flex items-center gap-2">
-<span class="w-3 h-3 bg-blue-500 rounded-full"></span> https://t.me/M... <button class="text-zinc-500 hover:text-white">×</button>
-</span>
-<span class="bg-zinc-900 border border-border-gray px-2 py-1 rounded text-[10px] flex items-center gap-2">
-<span class="w-3 h-3 bg-red-600 rounded-full"></span> https://www.y... <button class="text-zinc-500 hover:text-white">×</button>
-</span>
-</div>
-<div class="bg-black p-3 rounded-md flex items-center justify-between mb-4">
-<div class="flex items-center gap-2">
-<input class="w-16 bg-zinc-900 border-none text-center p-1 text-sm rounded" type="text" value="600"/>
-<span class="text-xs text-zinc-400">сек.</span>
-</div>
-<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-800" id="toggle-social" name="toggle" type="checkbox"/>
-<label class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer" for="toggle-social"></label>
-</div>
-</div>
-<button class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all glow-hover">
-          Сохранить список
-        </button>
-</section>
-<!-- END: Social List Panel -->
-</div>
-<!-- COLUMN 2 -->
-<div class="flex flex-col gap-6" data-purpose="column-two">
-<!-- BEGIN: Stream Management -->
-<section class="bg-card-bg border border-neon-green/30 p-5 rounded-eight shadow-lg" data-purpose="stream-management">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Управление стримом
-        </h2>
-<input class="w-full p-3 rounded-md text-sm mb-4" placeholder="Ссылка на стрим" type="text"/>
-<div class="grid grid-cols-2 gap-3 mb-4">
-<button class="bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all">СТАРТ</button>
-<button class="bg-stop-red text-white font-bold py-3 rounded-eight hover:opacity-90 transition-all">СТОП</button>
-</div>
-<button class="w-full border border-neon-green text-neon-green text-xs font-bold py-3 rounded-eight hover:bg-neon-green/10 transition-all flex items-center justify-center gap-2">
-<svg class="h-4 w-4 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path></svg>
-          Привязать канал
-        </button>
-</section>
-<!-- END: Stream Management -->
-<!-- BEGIN: Quota Monitoring -->
-<section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="quota-monitoring">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-6 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Мониторинг квоты
-        </h2>
-<div class="grid grid-cols-3 text-center mb-6">
-<div>
-<div class="text-neon-green text-xl font-bold">30</div>
-<div class="text-[10px] text-zinc-500 uppercase">Чат</div>
-</div>
-<div>
-<div class="text-stop-red text-xl font-bold">0</div>
-<div class="text-[10px] text-zinc-500 uppercase">Чистка</div>
-</div>
-<div>
-<div class="text-white text-xl font-bold">0</div>
-<div class="text-[10px] text-zinc-500 uppercase">Баллы</div>
-</div>
-</div>
-<div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden mb-1">
-<div class="bg-neon-green h-full w-[30%]"></div>
-</div>
-<div class="flex justify-between text-[10px] text-zinc-600">
-<span>0%</span>
-<span>100%</span>
-</div>
-</section>
-<!-- END: Quota Monitoring -->
-<!-- BEGIN: Last in Chat -->
-<section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="chat-history">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Последние в чате
-        </h2>
-<div class="bg-black/50 border border-zinc-900 rounded-md p-6 text-center text-zinc-600 text-sm italic">
-          Ожидание...
-        </div>
-</section>
-<!-- END: Last in Chat -->
-</div>
-<!-- COLUMN 3 -->
-<div class="flex flex-col gap-6" data-purpose="column-three">
-<!-- BEGIN: AI Ads Panel -->
-<section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="ad-settings">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Реклама Ai
-        </h2>
-<textarea class="w-full h-24 custom-scrollbar p-3 rounded-md text-sm mb-4 resize-none" placeholder="Текст рекламы...">Медведев: никакой необходимости объявлять новую волну мобилизации нет</textarea>
-<div class="bg-black p-3 rounded-md flex items-center justify-between mb-4">
-<div class="flex items-center gap-2">
-<input class="w-16 bg-zinc-900 border-none text-center p-1 text-sm rounded" type="text" value="600"/>
-<span class="text-xs text-zinc-400">сек.</span>
-</div>
-<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-800" id="toggle-ads" name="toggle" type="checkbox"/>
-<label class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer" for="toggle-ads"></label>
-</div>
-</div>
-<div class="flex gap-2">
-<button class="flex-grow bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all glow-hover">
-            Сохранить
-          </button>
-<button class="bg-zinc-800 p-3 rounded-eight hover:bg-zinc-700 transition-colors">
-<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</button>
-</div>
-</section>
-<!-- END: AI Ads Panel -->
-<!-- BEGIN: Profanity Filter Panel -->
-<section class="bg-card-bg border border-neon-green/30 p-5 rounded-eight shadow-lg" data-purpose="filter-settings">
-<h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
-<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          Фильтер матов
-        </h2>
-<textarea class="w-full h-24 custom-scrollbar p-3 rounded-md text-sm mb-4 resize-none" placeholder="маты через запятую..."></textarea>
-<div class="bg-black p-3 rounded-md flex items-center gap-4 mb-4">
-<span class="text-xs text-zinc-400 whitespace-nowrap">Время бана:</span>
-<div class="flex items-center gap-2">
-<input class="w-20 bg-zinc-900 border-none text-center p-1 text-sm rounded" type="text" value="300"/>
-<span class="text-xs text-zinc-400">сек.</span>
-</div>
-</div>
-<button class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all glow-hover">
-          Сохранить всё
-        </button>
-</section>
-<!-- END: Profanity Filter Panel -->
-</div>
-</main>
-<!-- END: Dashboard Grid -->
-<!-- BEGIN: Interactive Logic (Placeholders) -->
-<script data-purpose="ui-interactivity">
-    // This section would house the Supabase/Railway logic provided in the prompt's context
-    // Example: Toggle handler
-    document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
-      toggle.addEventListener('change', (e) => {
-        console.log(`Toggle ${e.target.id} is now ${e.target.checked ? 'ON' : 'OFF'}`);
-      });
-    });
 
-    // Example: Form submit prevention for demo
-    document.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        if(btn.innerText.includes('Сохранить')) {
-          btn.classList.add('scale-95');
-          setTimeout(() => btn.classList.remove('scale-95'), 100);
+<main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-purpose="dashboard-grid">
+    <div class="flex flex-col gap-6" data-purpose="column-one">
+        <section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="character-settings">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  Характер Kasper Ai
+            </h2>
+            <textarea id="t-char" class="w-full h-40 custom-scrollbar p-3 rounded-md text-sm mb-4 resize-none" placeholder="Твой стиль: спартанский..."></textarea>
+            <button onclick="saveField('bot_persona', 't-char')" class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all glow-hover">
+                  Сохранить характер
+            </button>
+        </section>
+
+        <section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg" data-purpose="social-settings">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  Список соцсетей
+            </h2>
+            <div class="flex gap-2 mb-4">
+                <input id="social-input" class="flex-grow p-2 rounded-md text-sm" placeholder="Вставьте ссылку..." type="text"/>
+                <button onclick="addSocialLink()" class="bg-zinc-800 hover:bg-zinc-700 px-4 rounded-md text-white">+</button>
+            </div>
+            <div id="social-tags-container" class="flex flex-wrap gap-2 mb-6">
+                </div>
+            <div class="bg-black p-3 rounded-md flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <input id="social_timer" class="w-16 bg-zinc-900 border-none text-center p-1 text-sm rounded" type="text" value="600"/>
+                    <span class="text-xs text-zinc-400">сек.</span>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input id="toggle-social" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-800" type="checkbox"/>
+                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer" for="toggle-social"></label>
+                </div>
+            </div>
+            <button onclick="saveSocials()" class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all glow-hover">
+                  Сохранить список
+            </button>
+        </section>
+    </div>
+
+    <div class="flex flex-col gap-6" data-purpose="column-two">
+        <section class="bg-card-bg border border-neon-green/30 p-5 rounded-eight shadow-lg">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  Управление стримом
+            </h2>
+            <input id="streamUrl" class="w-full p-3 rounded-md text-sm mb-4" placeholder="Ссылка на стрим" type="text"/>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <button onclick="controlBot('start')" class="bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 transition-all">СТАРТ</button>
+                <button onclick="controlBot('stop')" class="bg-stop-red text-white font-bold py-3 rounded-eight hover:opacity-90 transition-all">СТОП</button>
+            </div>
+            <button onclick="window.location.href='https://aleshabot-production.up.railway.app/youtube_auth?id='+tgId" class="w-full border border-neon-green text-neon-green text-xs font-bold py-3 rounded-eight hover:bg-neon-green/10 transition-all flex items-center justify-center gap-2">
+                Привязать канал
+            </button>
+        </section>
+
+        <section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-6 uppercase tracking-wider">
+                Мониторинг квоты
+            </h2>
+            <div class="grid grid-cols-3 text-center mb-6">
+                <div><div id="stat-chat" class="text-neon-green text-xl font-bold">0</div><div class="text-[10px] text-zinc-500">Чат</div></div>
+                <div><div id="stat-clean" class="text-stop-red text-xl font-bold">0</div><div class="text-[10px] text-zinc-500">Чистка</div></div>
+                <div><div id="quota-val" class="text-white text-xl font-bold">0</div><div class="text-[10px] text-zinc-500">Баллы</div></div>
+            </div>
+            <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden mb-1">
+                <div id="quota-fill" class="bg-neon-green h-full w-0 transition-all duration-500"></div>
+            </div>
+        </section>
+
+        <section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">Последние в чате</h2>
+            <div id="user-list" class="space-y-2">
+                <div class="text-center text-zinc-600 text-sm italic">Ожидание...</div>
+            </div>
+        </section>
+    </div>
+
+    <div class="flex flex-col gap-6" data-purpose="column-three">
+        <section class="bg-card-bg border border-border-gray p-5 rounded-eight shadow-lg">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">Реклама Ai</h2>
+            <textarea id="t-ads" class="w-full h-24 custom-scrollbar p-3 rounded-md text-sm mb-4 resize-none"></textarea>
+            <div class="bg-black p-3 rounded-md flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <input id="ads_timer" class="w-16 bg-zinc-900 border-none text-center p-1 text-sm rounded" type="text" value="600"/>
+                    <span class="text-xs text-zinc-400">сек.</span>
+                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle">
+                    <input id="toggle-ads" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-800" type="checkbox"/>
+                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer" for="toggle-ads"></label>
+                </div>
+            </div>
+            <button onclick="saveAds()" class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 glow-hover">Сохранить</button>
+        </section>
+
+        <section class="bg-card-bg border border-neon-green/30 p-5 rounded-eight shadow-lg">
+            <h2 class="text-neon-green text-sm font-bold flex items-center gap-2 mb-4 uppercase tracking-wider">Фильтер матов</h2>
+            <textarea id="t-bad-words" class="w-full h-24 custom-scrollbar p-3 rounded-md text-sm mb-4 resize-none" placeholder="маты через запятую..."></textarea>
+            <div class="bg-black p-3 rounded-md flex items-center gap-4 mb-4">
+                <span class="text-xs text-zinc-400">Время бана:</span>
+                <div class="flex items-center gap-2">
+                    <input id="ban_duration" class="w-20 bg-zinc-900 border-none text-center p-1 text-sm rounded" type="text" value="300"/>
+                    <span class="text-xs text-zinc-400">сек.</span>
+                </div>
+            </div>
+            <button onclick="saveBanSettings()" class="w-full bg-neon-green text-black font-bold py-3 rounded-eight hover:opacity-90 glow-hover">Сохранить всё</button>
+        </section>
+    </div>
+</main>
+
+<script>
+    const SB_URL = 'https://qidsqhxufgldvdsymtyn.supabase.co'; 
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpZHNxaHh1ZmdsZHZkc3ltdHluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMDQyMTksImV4cCI6MjA4OTY4MDIxOX0.PnGnONyBO8PkisjzcPcWK4Mql-cZ_vZAZm0SjDsWjew';        
+    const RAILWAY_URL = 'https://aleshabot-production.up.railway.app';
+
+    const params = new URLSearchParams(window.location.search);
+    const tgId = params.get('id');
+    const token = params.get('token');
+
+    let socialLinks = [];
+
+    function renderSocialTags() {
+        const container = document.getElementById('social-tags-container');
+        container.innerHTML = socialLinks.map((url, i) => `
+            <span class="bg-zinc-900 border border-border-gray px-2 py-1 rounded text-[10px] flex items-center gap-2">
+                <span class="w-3 h-3 ${url.includes('t.me') ? 'bg-blue-500' : 'bg-red-600'} rounded-full"></span> 
+                ${url.substring(0, 15)}... 
+                <button onclick="removeSocialLink(${i})" class="text-zinc-500 hover:text-white">×</button>
+            </span>
+        `).join('');
+    }
+
+    function addSocialLink() {
+        const input = document.getElementById('social-input');
+        const url = input.value.trim();
+        if (url && !socialLinks.includes(url)) {
+            socialLinks.push(url);
+            renderSocialTags();
+            input.value = '';
         }
-      });
-    });
-  </script>
-<!-- END: Interactive Logic -->
-</body></html>
+    }
+
+    function removeSocialLink(i) { socialLinks.splice(i, 1); renderSocialTags(); }
+
+    async function supabaseUpdate(d) {
+        await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(d)
+        });
+        alert("✅ Сохранено!");
+    }
+
+    async function saveField(f, id) { await supabaseUpdate({ [f]: document.getElementById(id).value }); }
+    async function saveAds() { await supabaseUpdate({ ads_text: document.getElementById('t-ads').value, ads_timer: parseInt(document.getElementById('ads_timer').value), ads_enabled: document.getElementById('toggle-ads').checked }); }
+    async function saveSocials() { await supabaseUpdate({ social_text: JSON.stringify(socialLinks), social_timer: parseInt(document.getElementById('social_timer').value), social_enabled: document.getElementById('toggle-social').checked }); }
+    async function saveBanSettings() { await supabaseUpdate({ word_filter: document.getElementById('t-bad-words').value, ban_duration: parseInt(document.getElementById('ban_duration').value) }); }
+
+    async function controlBot(action) {
+        const stream = document.getElementById('streamUrl').value;
+        const res = await fetch(`${RAILWAY_URL}/bot_control?action=${action}&id=${tgId}&token=${token}&stream=${encodeURIComponent(stream)}`);
+        const d = await res.json();
+        alert(d.msg || "Выполнено");
+    }
+
+    async function loadData() {
+        if(!tgId) return;
+        const rUser = await fetch(`${SB_URL}/rest/v1/users?tg_id=eq.${tgId}`, { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+        const uArr = await rUser.json();
+        if (uArr[0]) {
+            const u = uArr[0];
+            document.getElementById('t-char').value = u.bot_persona || '';
+            document.getElementById('t-ads').value = u.ads_text || '';
+            document.getElementById('ads_timer').value = u.ads_timer || 600;
+            document.getElementById('toggle-ads').checked = u.ads_enabled;
+            document.getElementById('t-bad-words').value = u.word_filter || '';
+            document.getElementById('ban_duration').value = u.ban_duration || 300;
+            document.getElementById('stat-chat').innerText = u.stat_chat || 0;
+            document.getElementById('stat-clean').innerText = u.stat_clean || 0;
+            document.getElementById('quota-val').innerText = u.used_quota || 0;
+            document.getElementById('quota-fill').style.width = Math.min((u.used_quota/10000)*100, 100) + '%';
+            try { socialLinks = JSON.parse(u.social_text || "[]"); } catch(e) { socialLinks = []; }
+            renderSocialTags();
+            document.getElementById('social_timer').value = u.social_timer || 600;
+            document.getElementById('toggle-social').checked = u.social_enabled;
+        }
+        const rChat = await fetch(`${SB_URL}/rest/v1/chat_activity?user_id=eq.${tgId}&order=last_seen.desc&limit=5`, { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+        const cArr = await rChat.json();
+        const list = document.getElementById('user-list');
+        list.innerHTML = cArr.map(c => `<div class="flex justify-between items-center bg-zinc-900/50 p-2 rounded border border-border-gray text-xs"><span>${c.display_name}</span><button class="text-stop-red font-bold">БАН</button></div>`).join('') || '<div class="text-center text-zinc-600 italic">Чат пуст</div>';
+    }
+    window.onload = loadData;
+</script>
+</body>
+</html>
