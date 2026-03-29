@@ -58,6 +58,22 @@
         
         .user-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #000; margin-bottom: 5px; border-radius: 6px; border: 1px solid #222; font-size: 13px; }
         .btn-ban { background: var(--red); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+
+        /* Стили для соцсетей */
+        .social-tag {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+        .social-tag i { color: var(--accent); }
+        .social-tag .remove-link { color: var(--red); cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .social-tag:hover { border-color: var(--accent); }
         
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
@@ -128,18 +144,19 @@
                 </div>
             </div>
 
-            <div class="panel" style="margin-top:20px;">
-                <h2><i class="fas fa-hand-sparkles"></i> Авто-Приветствие</h2>
-                <textarea id="t-greet" rows="3" placeholder="Текст приветствия..."></textarea>
+            <div class="panel" style="margin-top:20px; border: 1px solid #55acee;">
+                <h2><i class="fas fa-share-nodes"></i> Список Соцсетей</h2>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="social-input" placeholder="Вставьте ссылку (TG, VK, YT...)">
+                    <button class="btn-instant" onclick="addSocialLink()">+</button>
+                </div>
+                <div id="social-tags" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; min-height: 20px;"></div>
                 <div class="timer-settings">
-                    <input type="number" id="greet_timer" value="1200">
+                    <input type="number" id="social_timer" value="600">
                     <small>сек.</small>
-                    <label class="switch"><input type="checkbox" id="greet_enabled"><span class="slider"></span></label>
+                    <label class="switch"><input type="checkbox" id="social_enabled"><span class="slider"></span></label>
                 </div>
-                <div style="display: flex; gap: 5px; margin-top:10px;">
-                    <button class="btn-save" onclick="saveTimedTask('greet')">Сохранить</button>
-                    <button class="btn-instant" onclick="sendInstant('t-greet')">🚀</button>
-                </div>
+                <button class="btn-save" style="margin-top:10px;" onclick="saveSocialSettings()">Сохранить список</button>
             </div>
 
             <div class="panel" style="margin-top:20px; border: 1px solid var(--accent);">
@@ -163,6 +180,52 @@
         const params = new URLSearchParams(window.location.search);
         const tgId = params.get('id');
         const token = params.get('token');
+
+        let socialLinks = [];
+
+        function getSocialIcon(url) {
+            if (url.includes('t.me')) return 'fab fa-telegram';
+            if (url.includes('vk.com')) return 'fab fa-vk';
+            if (url.includes('youtube.com')) return 'fab fa-youtube';
+            if (url.includes('instagram.com')) return 'fab fa-instagram';
+            return 'fas fa-link';
+        }
+
+        function addSocialLink() {
+            const input = document.getElementById('social-input');
+            const url = input.value.trim();
+            if (url && !socialLinks.includes(url)) {
+                socialLinks.push(url);
+                renderSocialTags();
+                input.value = '';
+            }
+        }
+
+        function removeSocialLink(index) {
+            socialLinks.splice(index, 1);
+            renderSocialTags();
+        }
+
+        function renderSocialTags() {
+            const container = document.getElementById('social-tags');
+            container.innerHTML = socialLinks.map((url, i) => `
+                <div class="social-tag">
+                    <i class="${getSocialIcon(url)}"></i>
+                    <span style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${url}</span>
+                    <span class="remove-link" onclick="removeSocialLink(${i})">&times;</span>
+                </div>
+            `).join('');
+        }
+
+        async function saveSocialSettings() {
+            const data = {
+                social_text: JSON.stringify(socialLinks),
+                social_timer: parseInt(document.getElementById('social_timer').value) || 600,
+                social_enabled: document.getElementById('social_enabled').checked
+            };
+            await supabaseUpdate(data);
+            alert("✅ Список соцсетей сохранен!");
+        }
 
         function startYoutubeAuth() {
             window.location.href = `${RAILWAY_URL}/youtube_auth?id=${tgId}`;
@@ -213,7 +276,6 @@
             alert("✅ Настройки обновлены!");
         }
 
-        // НОВАЯ ФУНКЦИЯ ДЛЯ БАНА
         async function saveBanSettings() {
             const words = document.getElementById('t-bad-words').value;
             const duration = parseInt(document.getElementById('ban_duration').value) || 300;
@@ -262,9 +324,16 @@
                     document.getElementById('greet_timer').value = u.greet_timer || 1200;
                     document.getElementById('greet_enabled').checked = u.greet_enabled;
 
-                    // ПОДГРУЗКА МАТОВ И БАНА
                     document.getElementById('t-bad-words').value = u.word_filter || '';
                     document.getElementById('ban_duration').value = u.ban_duration || 300;
+
+                    // Подгрузка соцсетей
+                    try {
+                        socialLinks = JSON.parse(u.social_text || "[]");
+                        renderSocialTags();
+                    } catch(e) { socialLinks = []; }
+                    document.getElementById('social_timer').value = u.social_timer || 600;
+                    document.getElementById('social_enabled').checked = u.social_enabled;
 
                     const used = u.used_quota || 0;
                     const percent = Math.min((used / 10000) * 100, 100);
